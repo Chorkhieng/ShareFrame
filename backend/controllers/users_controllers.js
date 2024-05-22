@@ -1,58 +1,52 @@
-
-
+const HTTPError = require('../models/htttp_error');
+const uuid = require('uuid/v4');
 
 // dummy data
-const DUMMY_PLACES = [
+const DUMMY_USERS = [
     {
-        id: "p1",
-        title: "Angkor Watt", 
-        description: "One of the most complex ancient structures in the world.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/20171126_Angkor_Wat_4712_DxO.jpg/1024px-20171126_Angkor_Wat_4712_DxO.jpg",
-        address: "Krong Siem Reap, Cambodia",
-        location: {
-            lat: 13.412474505050575, 
-            lng: 103.866808669721
-        },
-        creator: 'u1'
-    },
-    {
-        id: "p2",
-        title: "Great Wall of China",
-        description: "An ancient wall in China built to protect against invasions.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/1024px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg",
-        address: "China",
-        location: {
-            lat: 40.4319,
-            lng: 116.5704
-        },
-        creator: 'u1'
-    },
-    {
-        id: "p3",
-        title: "Machu Picchu",
-        description: "An ancient Inca city located in the Andes mountains of Peru.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/1024px-Machu_Picchu%2C_Peru.jpg",
-        address: "Peru",
-        location: {
-            lat: -13.1631,
-            lng: -72.5450
-        },
-        creator: 'u1'
-    },
-    {
-        id: "p4",
-        title: "Taj Mahal",
-        description: "A white marble mausoleum in India, built by Mughal Emperor Shah Jahan in memory of his wife.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1024px-Taj_Mahal_%28Edited%29.jpeg",
-        address: "Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India",
-        location: {
-            lat: 27.1751,
-            lng: 78.0421
-        },
-        creator: 'u1'
+        id: "u1",
+        name: "Chork Hieng",
+        email: "chork@test.com",
+        password: "test123"
     }
-];
+]
+
+const getUsers = (req, res, next) => {
+    res.json({users: DUMMY_USERS});
+};
+
+const signup = (req, res, next) => {
+    const {name, email, password} = req.body;
+
+    const hasUser = DUMMY_USERS.find(u => u.email === email);
+    if(hasUser) {
+        throw new HTTPError("User with this email already exists. Try another email.");
+    }
+
+    const createdUser = {
+        id: uuid(),
+        name: name,
+        email: email,
+        password: password
+    }
+    
+    DUMMY_USERS.push(createdUser);
+
+    res.status(201).json({users: createdUser});
+};
+
+const login = (req, res, next) => {
+    const {email, password} = req.body;
+
+    const identifiedUser = DUMMY_USERS.find(p => p.email === email);
+
+    if (!identifiedUser || (identifiedUser.password !== password)) {
+        throw new HTTPError("Invalid email or password!", 401); //auth failed
+    }
+    res.status(200).json({message: "Logged in successfully!"});
+};
 
 
-
-
+exports.getUsers = getUsers;
+exports.signup = signup;
+exports.login = login;
