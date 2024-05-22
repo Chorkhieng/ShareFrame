@@ -1,6 +1,7 @@
 const HTTPError = require('../models/htttp_error');
 const uuid = require('uuid/v4');
 const { validationResult } = require('express-validator');
+const User = require('../models/user');
 
 // dummy data
 const DUMMY_USERS = [
@@ -16,30 +17,48 @@ const getUsers = (req, res, next) => {
     res.json({users: DUMMY_USERS});
 };
 
-const signup = (req, res, next) => {
+const signup = async (req, res, next) => {
     const err = validationResult(req); // check if request has valid data
     if (!err.isEmpty()) {
-        throw new HTTPError("Invalid inputs data.", 422);
+        return next(new HTTPError("Invalid inputs data.", 422));
     }
 
     
-    const {name, email, password} = req.body;
+    const {name: name, email: email, password: password, places: places} = req.body;
 
-    const hasUser = DUMMY_USERS.find(u => u.email === email);
-    if(hasUser) {
-        throw new HTTPError("User with this email already exists. Try another email.");
+    let existingUser;
+
+    try {
+        existingUser = await User.findOne({email: email});
+    }
+    catch (err) {
+        const error = new HTTPError("Cound not sign up.", 500);
+        return next(error);
     }
 
-    const createdUser = {
-        id: uuid(),
+    if (existingUser) {
+        const error = new HTTPError("User with this email already exist.", 404);
+        return next(error);
+    }
+    
+
+    const createdUser = User ({
         name: name,
         email: email,
-        password: password
-    }
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Pug_-_1_year_Old_%28cropped%29.jpg/1024px-Pug_-_1_year_Old_%28cropped%29.jpg",
+        password: password,
+        places: places
+    });
     
-    DUMMY_USERS.push(createdUser);
+    try {
+        await createdUser.save();
+    }
+    catch (err) {
+        const error = new HTTPError("Cound not sign up. Please try again later.", 500);
+        return next(error);
+    }
 
-    res.status(201).json({users: createdUser});
+    res.status(201).json({users: createdUser.toObject({getters: true})});
 };
 
 const login = (req, res, next) => {

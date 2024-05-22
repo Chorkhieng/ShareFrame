@@ -94,7 +94,7 @@ const updatePlaceById = async (req, res, next) => {
 
     const err = validationResult(req); // check if request has valid data
     if (!err.isEmpty()) {
-        throw new HTTPError("Invalid inputs data.", 422);
+        return next(new HTTPError("Invalid inputs data.", 422));
     }
 
     const { title, description } = req.body;
