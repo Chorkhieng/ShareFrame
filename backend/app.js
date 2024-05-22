@@ -1,9 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/place_routes');
 const userRoutes = require('./routes/user_routes');
 const HTTPError = require('./models/htttp_error');
+const env = require("dotenv");
+
+env.config();
 
 const app = express();
 
@@ -27,4 +31,15 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(3000);
+
+// connect to database
+mongoose
+    .connect(process.env.MONGOOSE_SECRET)
+    .then(() => {
+        app.listen(3000);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+
