@@ -2,6 +2,8 @@ const HTTPError = require('../models/htttp_error');
 // const uuid = require('uuid/v4'); // third-party library for generating id
 const { validationResult } = require('express-validator');
 const Place = require('../models/place');
+const User = require('../models/user');
+const mongoose = require('mongoose');
 
 
 const getPlaceById = async (req, res, next) => {
@@ -75,9 +77,35 @@ const createPlace = async (req, res, next) => {
         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
       creator: creator
     });
+
+    let user;
+
+    try {
+      user = await User.findById(creator);
+    }
+    catch (err) {
+      const error = new HTTPError("Failed to create a new place.", 500);
+      return next(error);
+    }
+
+    if (!user) {
+      const error = new HTTPError("Could not find user with the given id.", 404);
+      return next(error);
+    }
   
     try {
-      await createdPlace.save();
+      // await createdPlace.save();
+
+      // this will allow data operations undo if one failed
+      // because User has relationship with Place Schema
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      await createdPlace.save({session: session});
+      user.places.push(createdPlace);
+
+      await user.save({session: session});
+      await session.commitTransaction();
     } catch (err) {
       const error = new HTTPError(
         'Creating place failed, please try again.',
