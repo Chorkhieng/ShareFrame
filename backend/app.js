@@ -11,7 +11,7 @@ env.config();
 
 const app = express();
 
-app.use(express.json())
+app.use(bodyParser.json())
 
 app.use('/api/places', placesRoutes); // this will start with /api/places ......
 app.use('/api/users', userRoutes); // this will start with /api/users .....
