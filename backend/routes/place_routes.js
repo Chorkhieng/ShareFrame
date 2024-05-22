@@ -1,6 +1,7 @@
 const express = require('express');
 // const bodyParser = require('body-parser');
-const exp = require('constants');
+const HTTPError = require('../models/htttp_error');
+
 
 const router = express.Router();
 
@@ -64,8 +65,7 @@ router.get('/:placeId', (req, res, next) => {
     });
 
     if (!place) {
-        const err = new Error("Counld not find the given placeId.");
-        err.code = 404;
+        const err = new HTTPError("Counld not find the given placeId.", 404); // from HTTPError class
         return next(err); // send to the next middleware
     }
 
@@ -80,8 +80,7 @@ router.get('/user/:userId', (req, res, next) => {
     });
 
     if (!user) {
-        const err = new Error("Counld not find the given userId.");
-        err.code = 404;
+        const err = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
         return next(err); // send to the next middleware
     }
 
