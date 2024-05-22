@@ -90,6 +90,30 @@ const createPlace = (req, res, next) => {
     res.status(201).json({place: createdPlace});
 };
 
+
+const updatePlaceById = (req, res, next) => {
+    const { title, description } = req.body;
+    const placeId = req.params.placeId;
+
+    const updatedPlace = { ...DUMMY_PLACES.find(p => p.id === placeId)}; // spread operator
+    const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+
+    // update title and description
+    updatedPlace.title = title;
+    updatedPlace.description = description;
+
+    DUMMY_PLACES[placeIndex] = updatedPlace;
+
+    res.status(200).json({place: DUMMY_PLACES[placeIndex]});
+};
+
+
+const deletePlaceById = (req, res, next) => {
+
+};
+
 exports.getPlaceById = getPlaceById;
 exports.getUserById = getUserById;
 exports.createPlace = createPlace;
+exports.updatePlaceById = updatePlaceById;
+exports.deletePlaceById = deletePlaceById;
