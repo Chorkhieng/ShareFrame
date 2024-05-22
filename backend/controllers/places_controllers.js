@@ -3,47 +3,6 @@ const HTTPError = require('../models/htttp_error');
 const { validationResult } = require('express-validator');
 const Place = require('../models/place');
 
-// dummy data
-let DUMMY_PLACES = [
-    {
-        id: "p1",
-        title: "Angkor Watt", 
-        description: "One of the most complex ancient structures in the world.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/20171126_Angkor_Wat_4712_DxO.jpg/1024px-20171126_Angkor_Wat_4712_DxO.jpg",
-        address: "Krong Siem Reap, Cambodia",
-        location: {
-            lat: 13.412474505050575, 
-            lng: 103.866808669721
-        },
-        creator: 'u1'
-    },
-    {
-        id: "p2",
-        title: "Machu Picchu",
-        description: "An ancient Inca city located in the Andes mountains of Peru.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/1024px-Machu_Picchu%2C_Peru.jpg",
-        address: "Peru",
-        location: {
-            lat: -13.1631,
-            lng: -72.5450
-        },
-        creator: 'u1'
-    },
-    {
-        id: "p3",
-        title: "Taj Mahal",
-        description: "A white marble mausoleum in India, built by Mughal Emperor Shah Jahan in memory of his wife.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1024px-Taj_Mahal_%28Edited%29.jpeg",
-        address: "Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India",
-        location: {
-            lat: 27.1751,
-            lng: 78.0421
-        },
-        creator: 'u1'
-    }
-];
-
-
 
 const getPlaceById = async (req, res, next) => {
     const placeId = req.params.placeId; // { pid: 'p1' }
@@ -168,13 +127,27 @@ const updatePlaceById = async (req, res, next) => {
 };
 
 
-const deletePlaceById = (req, res, next) => {
+const deletePlaceById = async (req, res, next) => {
     const placeId = req.params.placeId;
 
-    if (DUMMY_PLACES.find(p => p.id === placeId)) {
-        throw new HTTPError("Could not find place this id.", 404);
+    let place;
+
+    try {
+        place = await Place.findById(placeId);
     }
-    DUMMY_PLACES = DUMMY_PLACES.filter(p => p.id !== placeId);
+    catch (err) {
+        const error = new HTTPError("Could not fetch the given placeId.", 500);
+        return next(error);
+    }
+
+    // deleting place
+    try {
+        await place.deleteOne();
+    }
+    catch (err) {
+        const error = new HTTPError("Could not delete the given placeId.", 404);
+        return next(error);
+    }
 
     res.status(200).json({message: "Place deleted"});
 };
