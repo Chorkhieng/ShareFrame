@@ -61,7 +61,13 @@ router.get('/:placeId', (req, res, next) => {
     const placeId = req.params.placeId;
     const place = DUMMY_PLACES.find(p => {
         return p.id === placeId;
-    })
+    });
+
+    if (!place) {
+        const err = new Error("Counld not find the given placeId.");
+        err.code = 404;
+        return next(err); // send to the next middleware
+    }
 
     res.json({place});
 });
@@ -71,7 +77,13 @@ router.get('/user/:userId', (req, res, next) => {
     const userId = req.params.userId;
     const user = DUMMY_PLACES.find(u => {
         return u.creator === userId;
-    })
+    });
+
+    if (!user) {
+        const err = new Error("Counld not find the given userId.");
+        err.code = 404;
+        return next(err); // send to the next middleware
+    }
 
     res.json({user});
 });
