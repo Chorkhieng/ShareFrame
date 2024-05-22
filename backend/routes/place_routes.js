@@ -2,6 +2,7 @@ const express = require('express');
 // const bodyParser = require('body-parser');
 // const HTTPError = require('../models/htttp_error');
 const placesControllers = require('../controllers/places_controllers');
+const { check } = require('express-validator');
 
 
 
@@ -15,7 +16,13 @@ router.get('/:placeId', placesControllers.getPlaceById);
 router.get('/user/:userId', placesControllers.getPlacesUserId);
 
 // /api/places
-router.post('/', placesControllers.createPlace);
+router.post('/',
+                [
+                check('title').not().isEmpty(),
+                check('description').isLength({min: 5}), // min length is 5 character-long
+                check('address').not().isEmpty()
+            ],
+            placesControllers.createPlace);
 
 router.patch('/:placeId', placesControllers.updatePlaceById);
 

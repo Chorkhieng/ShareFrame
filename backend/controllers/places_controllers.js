@@ -1,5 +1,6 @@
 const HTTPError = require('../models/htttp_error');
 const uuid = require('uuid/v4'); // third-party library for generating id
+const { validationResult } = require('express-validator');
 
 // dummy data
 let DUMMY_PLACES = [
@@ -74,6 +75,11 @@ const getPlacesUserId = (req, res, next) => {
 
 // post request
 const createPlace = (req, res, next) => {
+    const err = validationResult(req); // check if request has valid data
+    if (!err.isEmpty()) {
+        throw new HTTPError("Invalid inputs data.", 422);
+    }
+
     const { title, description, coordinates, address, creator } = req.body;
     // const title = req.body.title;
     const createdPlace = {
