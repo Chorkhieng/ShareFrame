@@ -61,14 +61,23 @@ const signup = async (req, res, next) => {
     res.status(201).json({users: createdUser.toObject({getters: true})});
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
     const {email, password} = req.body;
 
-    const identifiedUser = DUMMY_USERS.find(p => p.email === email);
+    let existingUser;
 
-    if (!identifiedUser || (identifiedUser.password !== password)) {
-        throw new HTTPError("Invalid email or password!", 401); //auth failed
+    try {
+        existingUser = await User.findOne({email: email});
     }
+    catch (err) {
+        const error = new HTTPError("The given email does not exist.", 500);
+        return next(error);
+    }
+
+    if (!existingUser || (existingUser.password !== password)) {
+        return next( new HTTPError("Invalid email or password.", 401));
+    }
+
     res.status(200).json({message: "Logged in successfully!"});
 };
 
