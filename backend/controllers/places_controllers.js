@@ -1,5 +1,5 @@
 const HTTPError = require('../models/htttp_error');
-const uuid = require('uuid/v4'); // third-party library for generating id
+// const uuid = require('uuid/v4'); // third-party library for generating id
 const { validationResult } = require('express-validator');
 const Place = require('../models/place');
 
@@ -71,18 +71,25 @@ const getPlaceById = async (req, res, next) => {
   };
 
 
-const getPlacesUserId = (req, res, next) => {
+const getPlacesUserId = async (req, res, next) => {
     const userId = req.params.userId;
-    const userPlaces = DUMMY_PLACES.filter(u => {
-        return u.creator === userId;
-    });
+    
+    let places;
 
-    if (!userPlaces) {
-        const err = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
-        return next(err); // send to the next middleware
+    try {
+        places = await Place.find({creator: userId});
+    }
+    catch (err) {
+        const error = new HTTPError("Could not fetch place(s) with given userId.", 404);
+        return next(error);
     }
 
-    res.json({userPlaces});
+    if (!places || (places.length === 0)) {
+        const error = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
+        return next(error); // send to the next middleware
+    }
+
+    res.json({places: places.map(p => p.toObject({getters: true}))});
 };
 
 // post request
