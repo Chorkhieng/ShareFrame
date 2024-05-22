@@ -98,6 +98,12 @@ const createPlace = (req, res, next) => {
 
 
 const updatePlaceById = (req, res, next) => {
+
+    const err = validationResult(req); // check if request has valid data
+    if (!err.isEmpty()) {
+        throw new HTTPError("Invalid inputs data.", 422);
+    }
+
     const { title, description } = req.body;
     const placeId = req.params.placeId;
 
@@ -116,6 +122,10 @@ const updatePlaceById = (req, res, next) => {
 
 const deletePlaceById = (req, res, next) => {
     const placeId = req.params.placeId;
+
+    if (DUMMY_PLACES.find(p => p.id === placeId)) {
+        throw new HTTPError("Could not find place this id.", 404);
+    }
     DUMMY_PLACES = DUMMY_PLACES.filter(p => p.id !== placeId);
 
     res.status(200).json({message: "Place deleted"});

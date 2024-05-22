@@ -24,7 +24,12 @@ router.post('/',
             ],
             placesControllers.createPlace);
 
-router.patch('/:placeId', placesControllers.updatePlaceById);
+router.patch('/:placeId',
+            [
+                check('title').not().isEmpty(),
+                check('description').not().isEmpty()
+            ],
+            placesControllers.updatePlaceById);
 
 router.delete('/:placeId', placesControllers.deletePlaceById);
 
