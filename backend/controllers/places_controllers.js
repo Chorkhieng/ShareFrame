@@ -45,19 +45,30 @@ let DUMMY_PLACES = [
 
 
 
-const getPlaceById = (req, res, next) => {
-    const placeId = req.params.placeId;
-    const place = DUMMY_PLACES.find(p => {
-        return p.id === placeId;
-    });
-
-    if (!place) {
-        const err = new HTTPError("Counld not find the given placeId.", 404); // from HTTPError class
-        return next(err); // send to the next middleware
+const getPlaceById = async (req, res, next) => {
+    const placeId = req.params.placeId; // { pid: 'p1' }
+  
+    let place;
+    try {
+      place = await Place.findById(placeId);
+    } catch (err) {
+      const error = new HTTPError(
+        'Something went wrong, could not find a place.',
+        500
+      );
+      return next(error);
     }
-
-    res.json({place});
-};
+  
+    if (!place) {
+      const error = new HTTPError(
+        'Could not find a place for the provided id.',
+        404
+      );
+      return next(error);
+    }
+  
+    res.json({ place: place.toObject({ getters: true }) }); // => { place } => { place: place }
+  };
 
 
 const getPlacesUserId = (req, res, next) => {
@@ -83,20 +94,20 @@ const createPlace = async (req, res, next) => {
       );
     }
   
-    const { title:title, description:description, address:address, creator:creator } = req.body;
-    let coordinates;
-    try {
-        coordinates = req.body.location;
-    } catch (error) {
-        return next(error);
-    }
+    const { title: title, description:description, address:address, creator:creator } = req.body;
+  
+    const coordinates = req.body.location;
+   
+  
+    // const title = req.body.title;
     const createdPlace = new Place({
-      title,
-      description,
-      address,
+      title: title,
+      description: description,
+      address: address,
       location: coordinates,
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
-      creator
+      image:
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
+      creator: creator
     });
   
     try {
@@ -108,7 +119,7 @@ const createPlace = async (req, res, next) => {
       );
       return next(error);
     }
-    
+  
     res.status(201).json({ place: createdPlace });
   };
 
