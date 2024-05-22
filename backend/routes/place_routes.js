@@ -12,7 +12,7 @@ const router = express.Router();
 router.get('/:placeId', placesControllers.getPlaceById);
 
 // get user by id
-router.get('/user/:userId', placesControllers.getUserById);
+router.get('/user/:userId', placesControllers.getPlacesUserId);
 
 // /api/places
 router.post('/', placesControllers.createPlace);

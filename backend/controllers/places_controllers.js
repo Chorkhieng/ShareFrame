@@ -1,5 +1,5 @@
 const HTTPError = require('../models/htttp_error');
-const uuid = require('uuid/v4');
+const uuid = require('uuid/v4'); // third-party library for generating id
 
 // dummy data
 let DUMMY_PLACES = [
@@ -58,18 +58,18 @@ const getPlaceById = (req, res, next) => {
 };
 
 
-const getUserById = (req, res, next) => {
+const getPlacesUserId = (req, res, next) => {
     const userId = req.params.userId;
-    const user = DUMMY_PLACES.find(u => {
+    const userPlaces = DUMMY_PLACES.filter(u => {
         return u.creator === userId;
     });
 
-    if (!user) {
+    if (!userPlaces) {
         const err = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
         return next(err); // send to the next middleware
     }
 
-    res.json({user});
+    res.json({userPlaces});
 };
 
 // post request
@@ -116,7 +116,7 @@ const deletePlaceById = (req, res, next) => {
 };
 
 exports.getPlaceById = getPlaceById;
-exports.getUserById = getUserById;
+exports.getPlacesUserId = getPlacesUserId;
 exports.createPlace = createPlace;
 exports.updatePlaceById = updatePlaceById;
 exports.deletePlaceById = deletePlaceById;
