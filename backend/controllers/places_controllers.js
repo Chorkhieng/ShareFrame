@@ -2,7 +2,7 @@ const HTTPError = require('../models/htttp_error');
 const uuid = require('uuid/v4');
 
 // dummy data
-const DUMMY_PLACES = [
+let DUMMY_PLACES = [
     {
         id: "p1",
         title: "Angkor Watt", 
@@ -16,7 +16,7 @@ const DUMMY_PLACES = [
         creator: 'u1'
     },
     {
-        id: "p3",
+        id: "p2",
         title: "Machu Picchu",
         description: "An ancient Inca city located in the Andes mountains of Peru.",
         imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Machu_Picchu%2C_Peru.jpg/1024px-Machu_Picchu%2C_Peru.jpg",
@@ -28,7 +28,7 @@ const DUMMY_PLACES = [
         creator: 'u1'
     },
     {
-        id: "p4",
+        id: "p3",
         title: "Taj Mahal",
         description: "A white marble mausoleum in India, built by Mughal Emperor Shah Jahan in memory of his wife.",
         imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1024px-Taj_Mahal_%28Edited%29.jpeg",
@@ -109,7 +109,10 @@ const updatePlaceById = (req, res, next) => {
 
 
 const deletePlaceById = (req, res, next) => {
+    const placeId = req.params.placeId;
+    DUMMY_PLACES = DUMMY_PLACES.filter(p => p.id !== placeId);
 
+    res.status(200).json({message: "Place deleted"});
 };
 
 exports.getPlaceById = getPlaceById;
