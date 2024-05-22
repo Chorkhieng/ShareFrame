@@ -1,6 +1,7 @@
 const HTTPError = require('../models/htttp_error');
 const uuid = require('uuid/v4'); // third-party library for generating id
 const { validationResult } = require('express-validator');
+const Place = require('../models/place');
 
 // dummy data
 let DUMMY_PLACES = [
@@ -74,27 +75,42 @@ const getPlacesUserId = (req, res, next) => {
 };
 
 // post request
-const createPlace = (req, res, next) => {
-    const err = validationResult(req); // check if request has valid data
-    if (!err.isEmpty()) {
-        throw new HTTPError("Invalid inputs data.", 422);
+const createPlace = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(
+        new HTTPError('Invalid inputs passed, please check your data.', 422)
+      );
     }
-
-    const { title, description, coordinates, address, creator } = req.body;
-    // const title = req.body.title;
-    const createdPlace = {
-      id: uuid(),
-      title: title,
-      description: description,
+  
+    const { title:title, description:description, address:address, creator:creator } = req.body;
+    let coordinates;
+    try {
+        coordinates = req.body.location;
+    } catch (error) {
+        return next(error);
+    }
+    const createdPlace = new Place({
+      title,
+      description,
+      address,
       location: coordinates,
-      address: address,
-      creator: creator
-    };
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
+      creator
+    });
   
-    DUMMY_PLACES.push(createdPlace); //unshift(createdPlace)
-  
-    res.status(201).json({place: createdPlace});
-};
+    try {
+      await createdPlace.save();
+    } catch (err) {
+      const error = new HTTPError(
+        'Creating place failed, please try again.',
+        500
+      );
+      return next(error);
+    }
+    
+    res.status(201).json({ place: createdPlace });
+  };
 
 
 const updatePlaceById = (req, res, next) => {

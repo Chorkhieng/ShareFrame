@@ -11,7 +11,7 @@ env.config();
 
 const app = express();
 
-app.use(bodyParser.json())
+app.use(express.json())
 
 app.use('/api/places', placesRoutes); // this will start with /api/places ......
 app.use('/api/users', userRoutes); // this will start with /api/users .....
@@ -33,13 +33,13 @@ app.use((err, req, res, next) => {
 
 
 // connect to database
-mongoose
-    .connect(process.env.MONGOOSE_SECRET)
-    .then(() => {
-        app.listen(3000);
-    })
-    .catch(err => {
-        console.log(err);
-    });
+mongoose.connect(process.env.MONGOOSE_SECRET)
+.then(() => {
+  console.log('Connected to MongoDB Atlas');
+  app.listen(3000);
+})
+.catch(err => {
+  console.error('Error connecting to MongoDB Atlas:', err);
+});
 
 
