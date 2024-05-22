@@ -80,7 +80,7 @@ const getPlacesUserId = async (req, res, next) => {
         places = await Place.find({creator: userId});
     }
     catch (err) {
-        const error = new HTTPError("Could not fetch place(s) with given userId.", 404);
+        const error = new HTTPError("Could not fetch place(s) with given userId.", 500);
         return next(error);
     }
 
@@ -131,7 +131,7 @@ const createPlace = async (req, res, next) => {
   };
 
 
-const updatePlaceById = (req, res, next) => {
+const updatePlaceById = async (req, res, next) => {
 
     const err = validationResult(req); // check if request has valid data
     if (!err.isEmpty()) {
@@ -141,16 +141,30 @@ const updatePlaceById = (req, res, next) => {
     const { title, description } = req.body;
     const placeId = req.params.placeId;
 
-    const updatedPlace = { ...DUMMY_PLACES.find(p => p.id === placeId)}; // spread operator
-    const placeIndex = DUMMY_PLACES.findIndex(p => p.id === placeId);
+    let updatedPlace;
+
+    try {
+        updatedPlace = await Place.findById(placeId);
+    }
+    catch (err) {
+        const error = new HTTPError("Could not fetch the given placeId.", 500);
+        return next(error);
+    }
+    
 
     // update title and description
     updatedPlace.title = title;
     updatedPlace.description = description;
 
-    DUMMY_PLACES[placeIndex] = updatedPlace;
+    try {
+        await updatedPlace.save();
+    }
+    catch (err) {
+        const error = new HTTPError("Could not update the given placeID", 500);
+        return next(error);
+    }
 
-    res.status(200).json({place: DUMMY_PLACES[placeIndex]});
+    res.status(200).json({place: updatedPlace.toObject({getters: true})});
 };
 
 
