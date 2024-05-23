@@ -35,22 +35,22 @@ const getPlaceById = async (req, res, next) => {
 const getPlacesUserId = async (req, res, next) => {
     const userId = req.params.userId;
     
-    let places;
+    let placesWithUser;
 
     try {
-        places = await Place.find({creator: userId});
+      placesWithUser = await Place.find(userId).populate('places');
     }
     catch (err) {
         const error = new HTTPError("Could not fetch place(s) with given userId.", 500);
         return next(error);
     }
 
-    if (!places || (places.length === 0)) {
+    if (!placesWithUser || (placesWithUser.places.length === 0)) {
         const error = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
         return next(error); // send to the next middleware
     }
 
-    res.json({places: places.map(p => p.toObject({getters: true}))});
+    res.json({places: placesWithUser.map(p => p.toObject({getters: true}))});
 };
 
 // post request
