@@ -1,5 +1,4 @@
 const HTTPError = require('../models/htttp_error');
-// const uuid = require('uuid/v4'); // third-party library for generating id
 const { validationResult } = require('express-validator');
 const Place = require('../models/place');
 const User = require('../models/user');

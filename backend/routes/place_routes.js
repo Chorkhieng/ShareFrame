@@ -1,9 +1,6 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
-// const HTTPError = require('../models/htttp_error');
 const placesControllers = require('../controllers/places_controllers');
 const { check } = require('express-validator');
-
 
 
 const router = express.Router();

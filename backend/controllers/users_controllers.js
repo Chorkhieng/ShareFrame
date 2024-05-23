@@ -1,17 +1,7 @@
 const HTTPError = require('../models/htttp_error');
-// const uuid = require('uuid/v4');
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 
-// dummy data
-// const DUMMY_USERS = [
-//     {
-//         id: "u1",
-//         name: "Chork Hieng",
-//         email: "chork@test.com",
-//         password: "test123"
-//     }
-// ]
 
 const getUsers = async (req, res, next) => {
     let users;
