@@ -10,11 +10,15 @@ import {
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
 import { AuthContext } from '../../shared/context/auth_context';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 import './Auth.css';
 
 const Auth = () => {
     const auth = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
 
     const [formState, inputHandler, setFormData] = useForm({
         email: {
@@ -58,6 +62,8 @@ const Auth = () => {
         }
         else {
             try {
+                setIsLoading(true);
+
                 const response = await fetch('http://localhost:4000/api/users/signup', {
                     method: 'POST',
                     headers: {
@@ -72,9 +78,12 @@ const Auth = () => {
 
                 await response.json();
 
+                setIsLoading(false);
             }
             catch (err) {
                 console.log(err);
+                setIsLoading(false);
+                setError(err.message || 'Something went wrong.');
             }
             
         }
@@ -82,6 +91,7 @@ const Auth = () => {
     };
 
     return <Card className="authentication">
+        {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
         <form onSubmit={authSubmitHandler}>
             {!isLoginMode && (<Input
