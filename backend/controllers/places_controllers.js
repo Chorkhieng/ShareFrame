@@ -63,7 +63,7 @@ const createPlace = async (req, res, next) => {
   
     const { title: title, description:description, address:address, creator:creator } = req.body;
   
-    const coordinates = req.body.location;
+    // const coordinates = req.body.location;
    
   
     // const title = req.body.title;
@@ -71,7 +71,7 @@ const createPlace = async (req, res, next) => {
       title: title,
       description: description,
       address: address,
-      location: coordinates,
+      // location: coordinates,
       image:
         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg',
       creator: creator
