@@ -128,7 +128,7 @@ const Auth = () => {
                     type="password"
                     label="Password"
                     validators={[VALIDATOR_MINLENGTH(8)]}
-                    errorText="Please enter a valid password."
+                    errorText="Please enter a valid password. Your password must be at least 8 charactor-long."
                     onInput={inputHandler}
                 />
 

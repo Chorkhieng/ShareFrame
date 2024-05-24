@@ -24,7 +24,8 @@ router.post('/',
 router.patch('/:placeId',
             [
                 check('title').not().isEmpty(),
-                check('description').not().isEmpty()
+                check('description').not().isEmpty(),
+                check('address').not().isLength({min: 5}) // min length is 5
             ],
             placesControllers.updatePlaceById);
 
