@@ -13,6 +13,7 @@ import { AuthContext } from '../../shared/context/auth_context';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
+import ImageUplaod from '../../shared/components/FormElements/ImageUpload';
 
 import './Auth.css';
 
@@ -121,7 +122,7 @@ const Auth = () => {
                     errorText="Please enter a valid email address."
                     onInput={inputHandler}
                 />
-
+                {!isLoginMode && <ImageUplaod id="image" center />}
                 <Input 
                     element="input"
                     id="password"
