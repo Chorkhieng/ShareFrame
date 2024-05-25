@@ -136,9 +136,9 @@ const UpdatePlace = () => {
 
           <Input
             id="address"
-            element="textarea"
+            element="input"
             label="Address"
-            validators={[VALIDATOR_MINLENGTH(5)]}
+            validators={[VALIDATOR_REQUIRE()]}
             errorText="Please enter an address (5 characters minimum)."
             onInput={inputHandler}
             initialValue={loadedPlace.address}

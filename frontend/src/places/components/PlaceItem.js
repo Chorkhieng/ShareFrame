@@ -32,6 +32,7 @@ const PlaceItem = props => {
       );
 
       props.onDelete(props.id);
+      
     }
     catch (err) {}
     

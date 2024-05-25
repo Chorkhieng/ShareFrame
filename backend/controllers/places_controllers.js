@@ -117,41 +117,34 @@ const createPlace = async (req, res, next) => {
   };
 
 
-const updatePlaceById = async (req, res, next) => {
-
-    const err = validationResult(req); // check if request has valid data
-    if (!err.isEmpty()) {
+  const updatePlaceById = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
         return next(new HTTPError("Invalid inputs data.", 422));
     }
 
-    const { title, description } = req.body;
+    const { title, description, address } = req.body;
     const placeId = req.params.placeId;
 
-    let updatedPlace;
-
     try {
-        updatedPlace = await Place.findById(placeId);
-    }
-    catch (err) {
-        const error = new HTTPError("Could not fetch the given placeId.", 500);
-        return next(error);
-    }
-    
+        let updatedPlace = await Place.findById(placeId);
+        if (!updatedPlace) {
+            throw new HTTPError("Place not found.", 404);
+        }
 
-    // update title and description
-    updatedPlace.title = title;
-    updatedPlace.description = description;
+        updatedPlace.title = title.value;
+        updatedPlace.description = description.value;
+        updatedPlace.address = address.value;
 
-    try {
-        await updatedPlace.save();
-    }
-    catch (err) {
-        const error = new HTTPError("Could not update the given placeID", 500);
-        return next(error);
-    }
+        // Save the updated place
+        updatedPlace = await updatedPlace.save();
 
-    res.status(200).json({place: updatedPlace.toObject({getters: true})});
+        res.status(200).json({ place: updatedPlace.toObject({ getters: true }) });
+    } catch (error) {
+        next(error);
+    }
 };
+
 
 
 const deletePlaceById = async (req, res, next) => {

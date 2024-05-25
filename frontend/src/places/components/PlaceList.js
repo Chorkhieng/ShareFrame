@@ -25,7 +25,7 @@ const PlaceList = props => {
                         description={place.description} 
                         address={place.address} 
                         creatorId={place.creator} 
-                        onDelete={props.deletePlaceHandler}
+                        onDelete={props.onDeletePlace}
                     />))
                     }
             </ul>);

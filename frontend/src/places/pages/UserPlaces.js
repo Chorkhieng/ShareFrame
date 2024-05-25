@@ -29,7 +29,7 @@ const UserPlaces = ()=>{
     }, [sendRequest, userId]);
 
     const deletePlaceHandler = deletedPlaceId => {
-        setLoadedPlaces(prePlace => prePlace.filter(place => place !== deletedPlaceId));
+        setLoadedPlaces(prePlace => prePlace.filter(place => place.id !== deletedPlaceId));
     }
     
 
@@ -40,7 +40,7 @@ const UserPlaces = ()=>{
                 <LoadingSpinner />
             </div>
         )}
-        {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} onDelete={deletePlaceHandler}/>}
+        {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} onDeletePlace={deletePlaceHandler}/>}
     </React.Fragment>;
 }
 
