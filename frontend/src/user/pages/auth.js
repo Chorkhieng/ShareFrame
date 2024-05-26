@@ -38,7 +38,8 @@ const Auth = () => {
         if (!isLoginMode) {
             setFormData({
                 ...formState.inputs,
-                name: undefined
+                name: undefined,
+                image: undefined
             }, formState.inputs.email.isValid && formState.inputs.password.isValid);
         }
         else {
@@ -46,6 +47,10 @@ const Auth = () => {
                 ...formState.inputs,
                 name: {
                     value: '',
+                    isValid: false
+                },
+                image: {
+                    value: null,
                     isValid: false
                 }
             }, false);
@@ -122,7 +127,7 @@ const Auth = () => {
                     errorText="Please enter a valid email address."
                     onInput={inputHandler}
                 />
-                {!isLoginMode && <ImageUplaod id="image" center />}
+                {!isLoginMode && <ImageUplaod id="image" center onInput={inputHandler} />}
                 <Input 
                     element="input"
                     id="password"
