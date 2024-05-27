@@ -129,7 +129,12 @@ const createPlace = async (req, res, next) => {
     try {
         let updatedPlace = await Place.findById(placeId);
         if (!updatedPlace) {
-            throw new HTTPError("Place not found.", 404);
+            throw new HTTPError("Place not found.", 500);
+        }
+
+        if (updatedPlace.creator.toString() !== req.userData.userId) {
+          const error = new HTTPError("You are not authorized to edit this place.", 401);
+          return next(error);
         }
 
         updatedPlace.title = title.value;
