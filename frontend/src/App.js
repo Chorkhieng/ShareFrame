@@ -14,41 +14,41 @@ import UpdatePlace from './places/pages/UpdatePlace';
 import Auth from './user/pages/auth';
 import { AuthContext } from './shared/context/auth_context';
 
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState(false);
   const [userId, setUserId] = useState(false);
 
-  useEffect(() => {
-    // Check for session token in session storage
-    const sessionToken = sessionStorage.getItem('sessionToken');
-    if (sessionToken) {
-      setIsLoggedIn(true);
-      setUserId(sessionToken); // Assuming your session token is the user ID
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Check for session token in session storage
+  //   const sessionToken = sessionStorage.getItem('sessionToken');
+  //   if (sessionToken) {
+  //     setIsLoggedIn(true);
+  //     setUserId(sessionToken); // Assuming your session token is the user ID
+  //   }
+  // }, []);
 
-  const login = useCallback((uid) => {
-    setIsLoggedIn(true);
+  const login = useCallback((uid, token) => {
+    setToken(token);
     setUserId(uid);
 
     // Store session token in session storage
-    sessionStorage.setItem('sessionToken', uid);
+    // sessionStorage.setItem('sessionToken', uid);
   }, []);
 
   const logout = useCallback(() => {
-    setIsLoggedIn(false);
+    setToken(null);
     setUserId(null);
 
     // Clear session token from session storage
-    sessionStorage.removeItem('sessionToken');
+    // sessionStorage.removeItem('sessionToken');
   }, []);
 
 
   let routes;
-  if (isLoggedIn) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -96,7 +96,13 @@ const App = () => {
 
 
   return (
-    <AuthContext.Provider value={{isLoggedIn: isLoggedIn, userId: userId, login: login, logout: logout}}>
+    <AuthContext.Provider value={{
+      isLoggedIn: !!token, 
+      token: token,
+      userId: userId, 
+      login: login, 
+      logout: logout,
+    }}>
       <Router>
         <MainNavigation />
         <main>

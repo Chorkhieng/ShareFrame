@@ -1,24 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
-import { useContext } from 'react';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { AuthContext } from '../../shared/context/auth_context';
-import ErrorModal from '../../shared/components/UIElements/ErrorModal';
-import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-import ImageUplaod from '../../shared/components/FormElements/ImageUpload';
 import './PlaceForm.css';
 
 const NewPlace = () => {
   const auth = useContext(AuthContext);
-  const {isLoading, error, sendRequest, clearError} =  useHTTPClient();
+  const { isLoading, error, sendRequest, clearError } = useHTTPClient();
   const [formState, inputHandler] = useForm(
     {
       title: {
@@ -41,49 +40,29 @@ const NewPlace = () => {
     false
   );
 
-
   const history = useHistory();
 
   const placeSubmitHandler = async event => {
     event.preventDefault();
-    
     try {
-
       const formData = new FormData();
       formData.append('title', formState.inputs.title.value);
       formData.append('description', formState.inputs.description.value);
       formData.append('address', formState.inputs.address.value);
       formData.append('creator', auth.userId);
       formData.append('image', formState.inputs.image.value);
-
-      await sendRequest(
-        'http://localhost:4000/api/places',
-        'POST',
-        formData
-      );
-
-      // await sendRequest('http://localhost:4000/api/places',
-      //           'POST',
-      //           JSON.stringify({
-      //             title: formState.inputs.title.value,
-      //             description: formState.inputs.description.value,
-      //             address: formState.inputs.address.value,
-      //             creator: auth.userId
-      //           }),
-      //           { 'Content-Type': 'application/json'}
-      //     );
-
+      await sendRequest('http://localhost:4000/api/places', 'POST', formData, {
+        Authorization: 'Bearer ' + auth.token
+      });
       history.push('/');
-    }
-    catch (err) {}
-    
+    } catch (err) {}
   };
 
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
       <form className="place-form" onSubmit={placeSubmitHandler}>
-        {isLoading && <LoadingSpinner asOVerlay />}
+        {isLoading && <LoadingSpinner asOverlay />}
         <Input
           id="title"
           element="input"
@@ -109,16 +88,16 @@ const NewPlace = () => {
           errorText="Please enter a valid address."
           onInput={inputHandler}
         />
-        <ImageUplaod 
-          id="image" 
-          onInput={inputHandler} 
-          errorText="Please upload an image."
+        <ImageUpload
+          id="image"
+          onInput={inputHandler}
+          errorText="Please provide an image."
         />
         <Button type="submit" disabled={!formState.isValid}>
           ADD PLACE
         </Button>
       </form>
-      </React.Fragment>
+    </React.Fragment>
   );
 };
 
