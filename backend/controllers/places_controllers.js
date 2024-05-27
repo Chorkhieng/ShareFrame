@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const Place = require('../models/place');
 const User = require('../models/user');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 
 const getPlaceById = async (req, res, next) => {
@@ -164,6 +165,9 @@ const deletePlaceById = async (req, res, next) => {
       return next(error);
     }
 
+    // image path is a string in database
+    const imagePath = place.image;
+
     // deleting place
     try {
         const session = await mongoose.startSession();
@@ -179,6 +183,10 @@ const deletePlaceById = async (req, res, next) => {
         const error = new HTTPError("Could not delete the given placeId.", 404);
         return next(error);
     }
+
+    fs.unlink(imagePath, err => {
+      console.log(err);
+    })
 
     res.status(200).json({message: "Place deleted"});
 };
