@@ -125,7 +125,7 @@ const login = async (req, res, next) => {
     }
 
     if (!isValidPassword) {
-        const error = new HTTPError("Invalid credentials for login.", 401);
+        const error = new HTTPError("Invalid credentials for login.", 403);
         return next(error);
     }
 

@@ -170,6 +170,11 @@ const deletePlaceById = async (req, res, next) => {
       return next(error);
     }
 
+    if (place.creator.toString() !== req.userData.userId) {
+      const error = new HTTPError("You are not authorized to delete this place.", 401);
+      return next(error);
+    }
+
     // image path is a string in database
     const imagePath = place.image;
 
