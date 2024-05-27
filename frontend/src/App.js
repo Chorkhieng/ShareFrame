@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -9,105 +9,111 @@ import {
 import Users from './user/pages/Users';
 import NewPlace from './places/pages/NewPlace';
 import UserPlaces from './places/pages/UserPlaces';
-import MainNavigation from './shared/components/Navigation/MainNavigation';
 import UpdatePlace from './places/pages/UpdatePlace';
 import Auth from './user/pages/auth';
+import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth_context';
 
-// import { useEffect } from 'react';
-
+let logoutTimer;
 
 const App = () => {
   const [token, setToken] = useState(false);
+  const [tokenExpirationDate, setTokenExpirationDate] = useState();
   const [userId, setUserId] = useState(false);
 
-  // useEffect(() => {
-  //   // Check for session token in session storage
-  //   const sessionToken = sessionStorage.getItem('sessionToken');
-  //   if (sessionToken) {
-  //     setIsLoggedIn(true);
-  //     setUserId(sessionToken); // Assuming your session token is the user ID
-  //   }
-  // }, []);
-
-  const login = useCallback((uid, token) => {
+  const login = useCallback((uid, token, expirationDate) => {
     setToken(token);
     setUserId(uid);
-
-    // Store session token in session storage
-    // sessionStorage.setItem('sessionToken', uid);
+    const tokenExpirationDate =
+      expirationDate || new Date(new Date().getTime() + 500 * 60 * 60); // logout after 30 minutes
+    setTokenExpirationDate(tokenExpirationDate);
+    localStorage.setItem(
+      'userData',
+      JSON.stringify({
+        userId: uid,
+        token: token,
+        expiration: tokenExpirationDate.toISOString()
+      })
+    );
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
+    setTokenExpirationDate(null);
     setUserId(null);
-
-    // Clear session token from session storage
-    // sessionStorage.removeItem('sessionToken');
+    localStorage.removeItem('userData');
   }, []);
 
+  useEffect(() => {
+    if (token && tokenExpirationDate) {
+      const remainingTime = tokenExpirationDate.getTime() - new Date().getTime();
+      logoutTimer = setTimeout(logout, remainingTime);
+    } else {
+      clearTimeout(logoutTimer);
+    }
+  }, [token, logout, tokenExpirationDate]);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem('userData'));
+    if (
+      storedData &&
+      storedData.token &&
+      new Date(storedData.expiration) > new Date()
+    ) {
+      login(storedData.userId, storedData.token, new Date(storedData.expiration));
+    }
+  }, [login]);
 
   let routes;
+
   if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
           <Users />
         </Route>
-
         <Route path="/:userId/places" exact>
           <UserPlaces />
         </Route>
-
         <Route path="/places/new" exact>
           <NewPlace />
         </Route>
-
         <Route path="/places/:placeId">
           <UpdatePlace />
         </Route>
-
         <Redirect to="/" />
-
       </Switch>
-      
     );
-  }
-  else {
+  } else {
     routes = (
       <Switch>
         <Route path="/" exact>
           <Users />
         </Route>
-
         <Route path="/:userId/places" exact>
           <UserPlaces />
         </Route>
-
-        <Route path="/auth" >
+        <Route path="/auth">
           <Auth />
         </Route>
-
         <Redirect to="/auth" />
       </Switch>
-      
     );
   }
 
-
   return (
-    <AuthContext.Provider value={{
-      isLoggedIn: !!token, 
-      token: token,
-      userId: userId, 
-      login: login, 
-      logout: logout,
-    }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: !!token,
+        token: token,
+        userId: userId,
+        login: login,
+        logout: logout
+      }}
+    >
       <Router>
         <MainNavigation />
-        <main>
-           {routes}
-        </main>
+        <main>{routes}</main>
       </Router>
     </AuthContext.Provider>
   );
