@@ -45,9 +45,8 @@ const getPlacesUserId = async (req, res, next) => {
         return next(error);
     }
 
-    if (!placesWithUser || (placesWithUser.places.length === 0)) {
-        const error = new HTTPError("Counld not find the given userId.", 404); // from HTTPError class
-        return next(error); // send to the next middleware
+    if (!placesWithUser /* || (placesWithUser.places.length === 0) */) {
+        return next(new HTTPError("Counld not find places with the given userId.", 404)); // from HTTPError class
     }
 
     res.json({places: placesWithUser.places.map(p => p.toObject({getters: true}))});
