@@ -6,12 +6,17 @@ const placesRoutes = require('./routes/place_routes');
 const userRoutes = require('./routes/user_routes');
 const HTTPError = require('./models/htttp_error');
 const env = require("dotenv");
+const fs = require('fs');
+const path = require('path');
 
 env.config();
 
 const app = express();
 
 app.use(bodyParser.json());
+
+// middleware for image upload
+app.use('/upload/images', express.static(path.join('upload', 'images')));
 
 // add middleware for fetch api in frontend
 app.use((req, res, next) => {
@@ -31,11 +36,17 @@ app.use((req, res, next) => {
 
 //middleware
 app.use((err, req, res, next) => {
-    if (res.headerSent) {
-        return next(err);
-    }
-    res.status(err.code || 500); 
-    res.json({message: err.message || 'Unkown error!'});
+  if (req.file) {
+    fs.unlink(req.file.path, err => {
+      console.log(err);
+    });
+  }
+
+  if (res.headerSent) {
+      return next(err);
+  }
+  res.status(err.code || 500); 
+  res.json({message: err.message || 'Unkown error!'});
 });
 
 
