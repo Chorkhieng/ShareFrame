@@ -75,7 +75,10 @@ const signup = async (req, res, next) => {
     try {
         token = jwt.sign({
             userId: createdUser.id, 
-            email: createdUser.email}, 
+            email: createdUser.email,
+            image: createdUser.image,
+            name: createdUser.name
+        }, 
             "secret-session",
             {expiresIn: '30m'} //expire time limit for web token
         ); 
@@ -89,33 +92,33 @@ const signup = async (req, res, next) => {
     res.status(201).json({
         user: createdUser.id,
         email: createdUser.email,
-        token: token
-        });
+        token: token,
+        image: existingUser.image,
+        name: existingUser.name
+       });
 };
 
 const login = async (req, res, next) => {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
 
     let existingUser;
 
     try {
-        existingUser = await User.findOne({email: email});
-    }
-    catch (err) {
+        existingUser = await User.findOne({ email: email });
+    } catch (err) {
         const error = new HTTPError("The given email does not exist.", 500);
         return next(error);
     }
 
     if (!existingUser) {
-        return next( new HTTPError("Invalid email or password.", 401));
+        return next(new HTTPError("Invalid email or password.", 401));
     }
 
     let isValidPassword = false;
 
     try {
         isValidPassword = await bcrypt.compare(password, existingUser.password);
-    }
-    catch (err) {
+    } catch (err) {
         const error = new HTTPError("Could not sign in.", 500);
         return next(error);
     }
@@ -128,14 +131,17 @@ const login = async (req, res, next) => {
     // json web token
     let token;
     try {
-        token = jwt.sign({
-            userId: existingUser.id, 
-            email: existingUser.email}, 
+        token = jwt.sign(
+            {
+                userId: existingUser.id,
+                email: existingUser.email,
+                name: existingUser.name, // Include name in the payload
+                image: existingUser.image // Include image in the payload
+            },
             "secret-session",
-            {expiresIn: '30m'} //expire time limit for web token
-        ); 
-    }
-    catch (err) {
+            { expiresIn: '30m' } //expire time limit for web token
+        );
+    } catch (err) {
         const error = new HTTPError("Login failed.", 500);
         return next(error);
     }
@@ -143,9 +149,12 @@ const login = async (req, res, next) => {
     res.status(200).json({
         userId: existingUser.id,
         email: existingUser.email,
-        token: token
+        token: token,
+        image: existingUser.image,
+        name: existingUser.name
     });
 };
+
 
 
 exports.getUsers = getUsers;

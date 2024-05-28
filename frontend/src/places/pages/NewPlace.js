@@ -28,10 +28,6 @@ const NewPlace = () => {
         value: '',
         isValid: false
       },
-      address: {
-        value: '',
-        isValid: false
-      },
       image: {
         value: null,
         isValid: false
@@ -48,14 +44,19 @@ const NewPlace = () => {
       const formData = new FormData();
       formData.append('title', formState.inputs.title.value);
       formData.append('description', formState.inputs.description.value);
-      formData.append('address', formState.inputs.address.value);
       formData.append('image', formState.inputs.image.value);
+      formData.append('authorImage', auth.image); // Directly access the image property from auth
+      formData.append('authorName', auth.name); // Directly access the name property from auth
+      formData.append('userId', auth.userId);
+      console.log(auth.image, auth.name);
+
       await sendRequest('http://localhost:4000/api/places', 'POST', formData, {
         Authorization: 'Bearer ' + auth.token
       });
       history.push('/');
     } catch (err) {}
   };
+  
 
   return (
     <React.Fragment>
@@ -77,14 +78,6 @@ const NewPlace = () => {
           label="Description"
           validators={[VALIDATOR_MINLENGTH(5)]}
           errorText="Please enter a valid description (at least 5 characters)."
-          onInput={inputHandler}
-        />
-        <Input
-          id="address"
-          element="input"
-          label="Address"
-          validators={[VALIDATOR_REQUIRE()]}
-          errorText="Please enter a valid address."
           onInput={inputHandler}
         />
         <ImageUpload

@@ -61,19 +61,26 @@ const createPlace = async (req, res, next) => {
       );
     }
   
-    const { title: title, description:description, address:address } = req.body;
+    const { 
+      title: title, 
+      description: description, 
+      authorImage: authorImage, 
+      authorName: authorName,
+      userId: userId
+    } = req.body;
   
     // const coordinates = req.body.location;
+    console.log(req.body);
    
   
     // const title = req.body.title;
     const createdPlace = new Place({
       title: title,
       description: description,
-      address: address,
-      // location: coordinates,
       image: req.file.path,
-      creator: req.userData.userId
+      authorImage: authorImage,
+      authorName: authorName,
+      creator: userId
     });
 
     let user;
@@ -122,7 +129,7 @@ const createPlace = async (req, res, next) => {
         return next(new HTTPError("Invalid inputs data.", 422));
     }
 
-    const { title, description, address } = req.body;
+    const { title, description} = req.body;
     const placeId = req.params.placeId;
 
     try {
@@ -138,7 +145,6 @@ const createPlace = async (req, res, next) => {
 
         updatedPlace.title = title.value;
         updatedPlace.description = description.value;
-        updatedPlace.address = address.value;
 
         // Save the updated place
         updatedPlace = await updatedPlace.save();

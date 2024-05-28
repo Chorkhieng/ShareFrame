@@ -22,17 +22,17 @@ router.use(checkAuth);
 router.post('/',
             fileUpload.single('image'),
             [
-            check('title').not().isEmpty(),
-            check('description').isLength({min: 5}), // min length is 5 character-long
-            check('address').not().isEmpty()
+                check('title').not().isEmpty(),
+                check('description').isLength({min: 5}), // min length is 5 character-long
+                check('authorImage').not().isEmpty(),
+                check('authorName').not().isEmpty()
             ],
             placesControllers.createPlace);
 
 router.patch('/:placeId',
             [
                 check('title').not().isEmpty(),
-                check('description').isLength({min: 5}), // min length is 
-                check('address').not().isEmpty()
+                check('description').isLength({min: 5}) // min length is 
             ],
             placesControllers.updatePlaceById);
 

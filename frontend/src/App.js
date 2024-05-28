@@ -16,7 +16,7 @@ import { useAuth } from './shared/hooks/auth-hook';
 import PageDemo from './demo/PageDemo';
 
 const App = () => {
-  const {token, login, logout, userId} = useAuth();
+  const {token, login, logout, userId, name, image} = useAuth();
 
   let routes;
 
@@ -64,6 +64,8 @@ const App = () => {
         isLoggedIn: !!token,
         token: token,
         userId: userId,
+        image: image,
+        name: name,
         login: login,
         logout: logout
       }}

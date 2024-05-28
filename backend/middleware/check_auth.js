@@ -13,14 +13,16 @@ module.exports = (req, res, next) => {
             throw new Error("Authentication failed.");
         }
 
-        const decodedToken = jwt.verify(token, "secret-session"); // {userId, email}
-        req.userData = {userId: decodedToken.userId};
+        const decodedToken = jwt.verify(token, "secret-session"); // Decode the token
+        req.userData = {
+            userId: decodedToken.userId,
+            name: decodedToken.name, // Include name in userData
+            image: decodedToken.image // Include image in userData
+        };
         next();
     }
     catch (err) {
-
         const error = new HTTPError("Authentication failed.", 401);
         return next(error);
     }
-
 };
