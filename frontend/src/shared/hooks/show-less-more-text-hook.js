@@ -11,7 +11,7 @@ const ReadMore = ({ content, maxLength }) => {
     <div>
       <div>
         {isTruncated ? (
-          <p>{`${content.slice(0, maxLength)} ...`}</p>
+          <p>{`${content.slice(0, maxLength)} ${content.length > 140 ? ' ...' : ''}`}</p>
         ) : (
           <p>{content}</p>
         )}

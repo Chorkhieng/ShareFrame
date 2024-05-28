@@ -88,7 +88,7 @@ const PlaceItem = props => {
           <div className="place-item__info">
             <Card>
               <h3 >{props.address}</h3>
-              <ReadMore content={props.description} maxLength={100} />
+              <ReadMore content={props.description} maxLength={140} />
             </Card>
           </div>
 
