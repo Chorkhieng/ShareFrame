@@ -8,6 +8,7 @@ import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './PlaceItem.css';
+import Avatar from '../../shared/components/UIElements/Avatar';
 
 const PlaceItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
@@ -69,24 +70,37 @@ const PlaceItem = props => {
       <li className="place-item">
         <Card className="place-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
+
+          <div className="place-item__info">
+            {/* <h1>{props.creatorName}</h1> TODO */}
+            <Card>
+              <h3 className="user-item__image">
+                <Avatar image={`http://localhost:4000/${props.image}`} alt={props.title}/>
+              </h3>
+            </Card>
+          </div>
+
           <div className="place-item__image">
             <img src={`http://localhost:4000/${props.image}`} alt={props.title} />
           </div>
-          <div className="place-item__info">
-            <h2>{props.title}</h2>
-            <h3>{props.address}</h3>
-            <p>{props.description}</p>
-          </div>
-          <div className="place-item__actions">
-            {auth.userId === props.creatorId && 
-              (<Button to={`/places/${props.id}`}>EDIT</Button>)}
 
-            {auth.userId === props.creatorId && 
-            (<Button danger onClick={showDeleteWarningHandler}>
-              DELETE
-            </Button>)}
-            
+          <div className="place-item__info">
+            <Card>
+              <h3>{props.address}</h3>
+              <p>{props.description}</p>
+            </Card>
           </div>
+
+          {auth.userId === props.creatorId && 
+            (<div className="place-item__actions">
+              <Button to={`/places/${props.id}`}>
+                EDIT
+              </Button>
+              <Button danger onClick={showDeleteWarningHandler}>
+                DELETE
+              </Button>
+            </div>)
+          }
         </Card>
       </li>
     </React.Fragment>
