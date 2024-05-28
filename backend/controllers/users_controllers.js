@@ -3,10 +3,6 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const env = require('dotenv');
-
-
-env.config();
 
 
 const getUsers = async (req, res, next) => {
@@ -80,8 +76,8 @@ const signup = async (req, res, next) => {
         token = jwt.sign({
             userId: createdUser.id, 
             email: createdUser.email}, 
-            process.env.SECRET_WEB_TOKEN,
-            {expiresIn: '1h'} //expire time limit for web token
+            "secret-session",
+            {expiresIn: '30m'} //expire time limit for web token
         ); 
     }
     catch (err) {
@@ -135,8 +131,8 @@ const login = async (req, res, next) => {
         token = jwt.sign({
             userId: existingUser.id, 
             email: existingUser.email}, 
-            "secret-token",
-            {expiresIn: '1h'} //expire time limit for web token
+            "secret-session",
+            {expiresIn: '30m'} //expire time limit for web token
         ); 
     }
     catch (err) {
