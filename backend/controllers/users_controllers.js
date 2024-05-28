@@ -93,8 +93,8 @@ const signup = async (req, res, next) => {
         user: createdUser.id,
         email: createdUser.email,
         token: token,
-        image: existingUser.image,
-        name: existingUser.name
+        image: createdUser.image,
+        name: createdUser.name
        });
 };
 

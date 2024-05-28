@@ -31,10 +31,6 @@ const UpdatePlace = () => {
       description: {
         value: '',
         isValid: false
-      },
-      address: {
-        value: '', 
-        isValid: false
       }
     },
     false
@@ -55,10 +51,6 @@ const UpdatePlace = () => {
             },
             description: {
               value: responseData.place.description,
-              isValid: true
-            },
-            address: {
-              value: responseData.place.address,
               isValid: true
             }
           },
@@ -135,16 +127,6 @@ const UpdatePlace = () => {
             initialValid={true}
           />
 
-          <Input
-            id="address"
-            element="input"
-            label="Address"
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter an address (5 characters minimum)."
-            onInput={inputHandler}
-            initialValue={loadedPlace.address}
-            initialValid={true}
-          />
           <Button type="submit" disabled={!formState.isValid}>
             UPDATE POST
           </Button>

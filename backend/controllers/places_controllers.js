@@ -70,7 +70,7 @@ const createPlace = async (req, res, next) => {
     } = req.body;
   
     // const coordinates = req.body.location;
-    console.log(req.body);
+    // console.log(req.body);
    
   
     // const title = req.body.title;

@@ -52,6 +52,23 @@
     height: 15rem;
     width: 100%;
   }
+
+  .author-item {
+    display: flex;
+    padding: 5px;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .author-item img {
+    width: 80%;
+    height: 80%;
+  }
+
+  .title-item {
+    text-align: center;
+  }
+  
   
   @media (min-width: 768px) {
     .place-item__image {

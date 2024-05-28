@@ -8,7 +8,7 @@ import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './PlaceItem.css';
-import Avatar from '../../shared/components/UIElements/Avatar';
+import Avatar from '../../shared/components/UIElements/Avatar'
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 
 const PlaceItem = props => {
@@ -72,14 +72,15 @@ const PlaceItem = props => {
         <Card className="place-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
 
-          <div className="place-item__info">
-            {/* <h1>{props.creatorName}</h1> TODO */}
-            <Card>
-              <h3 className="user-item__image">
-                <Avatar image={`http://localhost:4000/${props.image}`} alt={props.title}/>
-              </h3>
+            <Card className="user-item__content author-item">
+                <div className="user-item__image">
+                  <Avatar image={`${props.authorImage}`} alt={props.name} />
+                </div>
+                <div>
+                  <h3>{props.authorName}</h3>
+                </div>
             </Card>
-          </div>
+
 
           <div className="place-item__image">
             <img src={`http://localhost:4000/${props.image}`} alt={props.title} />
@@ -87,24 +88,28 @@ const PlaceItem = props => {
 
           <div className="place-item__info">
             <Card>
-              <h3 >{props.address}</h3>
+              <h4 className='title-item'>{props.title}</h4>
               <ReadMore content={props.description} maxLength={140} />
             </Card>
           </div>
-
-          {auth.userId === props.creatorId && 
-            (<div className="place-item__actions">
+          {auth.userId && (
+            <div className="place-item__actions">
               <Button /* { onClick={handleLike}}  */ >
                 React
               </Button>
-              <Button to={`/places/${props.id}`}>
-                Edit
-              </Button>
-              <Button danger onClick={showDeleteWarningHandler}>
-                Delete
-              </Button>
+              {auth.userId === props.creatorId && 
+                <Button to={`/places/${props.id}`}>
+                  Edit
+                </Button>
+              }
+              {auth.userId === props.creatorId &&
+                <Button danger onClick={showDeleteWarningHandler}>
+                  Delete
+                </Button>
+              }
             </div>)
           }
+          
         </Card>
       </li>
     </React.Fragment>
