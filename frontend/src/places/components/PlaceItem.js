@@ -94,11 +94,14 @@ const PlaceItem = props => {
 
           {auth.userId === props.creatorId && 
             (<div className="place-item__actions">
+              <Button /* { onClick={handleLike}}  */ >
+                React
+              </Button>
               <Button to={`/places/${props.id}`}>
-                EDIT
+                Edit
               </Button>
               <Button danger onClick={showDeleteWarningHandler}>
-                DELETE
+                Delete
               </Button>
             </div>)
           }

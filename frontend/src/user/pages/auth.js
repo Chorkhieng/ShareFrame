@@ -145,11 +145,11 @@ const Auth = () => {
                 />
 
                 <Button type="submit" disabled={!formState.isValid} >
-                    {isLoginMode ? 'LOGIN' : 'SIGNUP'}
+                    {isLoginMode ? 'LogIn' : 'SignUp'}
                 </Button>
             </form>
             <Button inverse onClick={switchModeHandler}>
-                SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
+                Switch To {isLoginMode ? 'SignUp' : 'LogIn'}
             </Button>
         </Card>
     </React.Fragment>;
