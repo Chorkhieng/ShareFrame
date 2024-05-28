@@ -1,0 +1,26 @@
+body {
+    background-color: rgb(240, 237, 226);
+    color: rgb(59, 84, 10);
+}
+
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #78782cc0;
+    margin-bottom: auto;
+  }
+  
+  footer p {
+    font-size: 1rem;
+    font-weight: bolder;
+  }
+  
+  
+  

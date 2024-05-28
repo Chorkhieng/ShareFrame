@@ -13,6 +13,7 @@ import Auth from './user/pages/auth';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth_context';
 import { useAuth } from './shared/hooks/auth-hook';
+import PageDemo from './demo/PageDemo';
 
 const App = () => {
   const {token, login, logout, userId} = useAuth();
@@ -49,7 +50,10 @@ const App = () => {
         <Route path="/auth">
           <Auth />
         </Route>
-        <Redirect to="/auth" />
+        <Route>
+          <PageDemo />
+        </Route>
+        <Redirect to="/demo" />
       </Switch>
     );
   }
