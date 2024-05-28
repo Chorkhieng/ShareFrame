@@ -9,6 +9,7 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './PlaceItem.css';
 import Avatar from '../../shared/components/UIElements/Avatar';
+import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 
 const PlaceItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
@@ -86,8 +87,8 @@ const PlaceItem = props => {
 
           <div className="place-item__info">
             <Card>
-              <h3>{props.address}</h3>
-              <p>{props.description}</p>
+              <h3 >{props.address}</h3>
+              <ReadMore content={props.description} maxLength={100} />
             </Card>
           </div>
 

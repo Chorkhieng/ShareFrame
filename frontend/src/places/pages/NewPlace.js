@@ -57,10 +57,6 @@ const NewPlace = () => {
     } catch (err) {}
   };
 
-  const cancelSubmitPost = () => {
-    history.goBack();
-  }
-
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
