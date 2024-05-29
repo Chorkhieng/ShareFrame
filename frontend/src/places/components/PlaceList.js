@@ -5,10 +5,11 @@ import Button from '../../shared/components/FormElements/Button';
 import { AuthContext } from '../../shared/context/auth_context';
 
 import './PlaceList.css';
+import Profile from '../../shared/components/UIElements/Profile';
 
 const PlaceList = props => {
     const auth = useContext(AuthContext);
-    if (props.items.length === 0) {
+    if (!props.items || props.items.length === 0) {
         return <div className="place-list center">
             <Card>
                 <h2> No post found.</h2>
@@ -17,7 +18,17 @@ const PlaceList = props => {
         </div>
     }
 
-    return (<ul className="place-list">
+    const { authorImage, authorName} = props.items[0];
+
+    // console.log("author img and name: ", authorImage, authorName);
+
+    return (
+        <React.Fragment>
+            <Profile 
+                image={authorImage}
+                name={authorName}
+            />
+            <ul className="place-list">
                 {props.items.map(place => 
                     (<PlaceItem 
                         key={place.id} 
@@ -31,7 +42,8 @@ const PlaceList = props => {
                         onDelete={props.onDeletePlace}
                     />))
                     }
-            </ul>);
+            </ul>
+        </React.Fragment>);
 };
 
 export default PlaceList;

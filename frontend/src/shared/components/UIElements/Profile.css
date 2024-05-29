@@ -1,0 +1,23 @@
+.profile-card {
+    margin: 1rem auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 40rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(173, 172, 157);
+  }
+  
+
+.profile-name {
+    text-align: center;
+    width: 100%;
+}
+
+.profile-image {
+    width: 90%;
+    height: 100%;
+    padding: 1rem;
+}
