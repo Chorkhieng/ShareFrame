@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useHTTPClient} from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
@@ -7,26 +6,24 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import PlaceList from '../components/PlaceList';
 
 
-const UserPlaces = ()=>{
+const AllPosts = ()=>{
     const [loadedPlaces, setLoadedPlaces] = useState();
     const {isLoading, error, sendRequest, clearError} = useHTTPClient();
-
-    const userId = useParams().userId; // userId is from (path="/:userId/places") in App.js
     
     useEffect(() => {
         const fetchPlaces = async () => {
             try {
                 const responseData = await sendRequest(
-                    `http://localhost:4000/api/places/user/${userId}`,
+                    `http://localhost:4000/api/places/all`
 
                 );
-                setLoadedPlaces(responseData.places);
+                setLoadedPlaces(responseData.posts);
             }
             catch (err) {}
             
         };
         fetchPlaces();
-    }, [sendRequest, userId]);
+    }, [sendRequest]);
 
     const deletePlaceHandler = deletedPlaceId => {
         setLoadedPlaces(prePlace => prePlace.filter(place => place.id !== deletedPlaceId));
@@ -42,12 +39,12 @@ const UserPlaces = ()=>{
         )}
         {!isLoading && loadedPlaces && 
             <PlaceList 
-                items={loadedPlaces}
+                items={loadedPlaces} 
                 onDeletePlace={deletePlaceHandler}
-                showProfile={true}
+                show={false}
             />
         }
     </React.Fragment>;
 }
 
-export default UserPlaces;
+export default AllPosts;

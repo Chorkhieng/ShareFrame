@@ -9,6 +9,9 @@ const router = express.Router();
 // page demo
 router.get('/demo');
 
+// new feeds
+router.get('/all', placesControllers.getAllPosts);
+
 // get place by id
 router.get('/:placeId', placesControllers.getPlaceById);
 

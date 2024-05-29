@@ -14,6 +14,7 @@ import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth_context';
 import { useAuth } from './shared/hooks/auth-hook';
 import PageDemo from './demo/PageDemo';
+import AllPosts from './places/pages/AllPosts';
 
 const App = () => {
   const {token, login, logout, userId, name, image} = useAuth();
@@ -23,6 +24,9 @@ const App = () => {
   if (token) {
     routes = (
       <Switch>
+        <Route path="/all" exact>
+          <AllPosts />
+        </Route>
         <Route path="/" exact>
           <Users />
         </Route>
@@ -35,7 +39,7 @@ const App = () => {
         <Route path="/places/:placeId">
           <UpdatePlace />
         </Route>
-        <Redirect to="/" />
+        <Redirect to="/all" />
       </Switch>
     );
   } else {

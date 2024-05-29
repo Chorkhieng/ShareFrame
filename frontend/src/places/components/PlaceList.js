@@ -27,6 +27,7 @@ const PlaceList = props => {
             <Profile 
                 image={authorImage}
                 name={authorName}
+                show={props.showProfile}
             />
             <ul className="place-list">
                 {props.items.map(place => 
@@ -41,7 +42,7 @@ const PlaceList = props => {
                         authorName={place.authorName}
                         onDelete={props.onDeletePlace}
                     />))
-                    }
+                }
             </ul>
         </React.Fragment>);
 };

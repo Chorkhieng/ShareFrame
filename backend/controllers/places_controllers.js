@@ -206,8 +206,29 @@ const deletePlaceById = async (req, res, next) => {
     res.status(200).json({message: "Place deleted"});
 };
 
+
+// get all posts for new feeds
+const getAllPosts = async (req, res, next) => {
+  let allPosts;
+
+  try {
+    allPosts = await Place.find();
+  } catch (err) {
+    const error = new HTTPError("Could not fetch posts.", 500);
+    return next(error);
+  }
+
+  if (!allPosts /* || allPosts.length === 0 */) {
+    return next(new HTTPError("Could not find any posts.", 404));
+  }
+
+  res.json({ posts: allPosts.map(post => post.toObject({ getters: true })) });
+};
+
+
 exports.getPlaceById = getPlaceById;
 exports.getPlacesUserId = getPlacesUserId;
 exports.createPlace = createPlace;
 exports.updatePlaceById = updatePlaceById;
 exports.deletePlaceById = deletePlaceById;
+exports.getAllPosts = getAllPosts;
