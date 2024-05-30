@@ -225,6 +225,54 @@ const getAllPosts = async (req, res, next) => {
   res.json({ posts: allPosts.map(post => post.toObject({ getters: true })) });
 };
 
+// like a post 
+const likePost = async (req, res, next) => {
+  const postId = req.params.postId;
+  const userId = req.userData.userId; // Assuming you're using JWT authentication
+
+  let post;
+  let user;
+
+  try {
+      post = await Post.findById(postId);
+      user = await User.findById(userId);
+  } catch (err) {
+      const error = new HTTPError("Could not find post or user.", 500);
+      return next(error);
+  }
+
+  if (!post || !user) {
+      const error = new HTTPError("Could not find post or user.", 404);
+      return next(error);
+  }
+
+  // Check if the user has already liked the post
+  let isLiked = post.likes.includes(userId);
+
+  try {
+      if (isLiked) {
+          // User has already liked the post, so remove the like
+          post.likes = post.likes.filter(id => id.toString() !== userId.toString());
+          user.likes = user.likes.filter(id => id.toString() !== postId.toString());
+      } else {
+          // User hasn't liked the post, so add the like
+          post.likes.push(userId);
+          user.likes.push(postId);
+      }
+
+      await post.save();
+      await user.save();
+  } catch (err) {
+      const error = new HTTPError("Failed to like/unlike the post.", 500);
+      return next(error);
+  }
+
+  res.status(200).json({ message: isLiked ? "Unliked" : "Liked" });
+};
+
+
+
+
 
 exports.getPostById = getPostById;
 exports.getPostsByUserId = getPostsByUserId;
@@ -232,3 +280,4 @@ exports.createPost = createPost;
 exports.updatePostById = updatePostById;
 exports.deletePostById = deletePostById;
 exports.getAllPosts = getAllPosts;
+exports.likePost = likePost;

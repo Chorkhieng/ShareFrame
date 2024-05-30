@@ -16,6 +16,7 @@ const PostItem = props => {
   const auth = useContext(AuthContext);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const showDeleteWarningHandler = () => {
     setShowConfirmModal(true);
@@ -42,6 +43,25 @@ const PostItem = props => {
     }
     catch (err) {}
     
+  };
+
+  const handleLike = async () => {
+    try {
+      // Send a request to like/unlike the post
+      const responseData = await sendRequest(
+        `http://localhost:4000/api/posts/${props.id}/like`,
+        'PATCH', // Use PATCH method to toggle like status
+        null,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
+      );
+
+      // Update the like status based on the response
+      setIsLiked(responseData.message);
+    } catch (err) {
+      // Handle errors
+    }
   };
 
   return (
@@ -94,8 +114,8 @@ const PostItem = props => {
           </div>
           {auth.userId && (
             <div className="place-item__actions">
-              <Button /* { onClick={handleLike}}  */ >
-                React
+              <Button onClick={handleLike} color={isLiked ? 'primary' : 'default'}>
+                {isLiked === 'Unliked' ? 'Like' : 'Unlike'}
               </Button>
               {auth.userId === props.creatorId && 
                 <Button to={`/posts/${props.id}`}>

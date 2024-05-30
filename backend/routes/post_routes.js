@@ -39,6 +39,9 @@ router.patch('/:postId',
             ],
             postsControllers.updatePostById);
 
+// Like/unlike a post by ID
+router.patch('/:postId/like', postsControllers.likePost);
+
 router.delete('/:postId', postsControllers.deletePostById);
 
 
