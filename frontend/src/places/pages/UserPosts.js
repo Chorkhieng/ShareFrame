@@ -4,32 +4,32 @@ import { useHTTPClient} from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
-import PlaceList from '../components/PlaceList';
+import PostList from '../components/PostList';
 
 
-const UserPlaces = ()=>{
-    const [loadedPlaces, setLoadedPlaces] = useState();
+const UserPosts = ()=>{
+    const [loadedPosts, setLoadedPosts] = useState();
     const {isLoading, error, sendRequest, clearError} = useHTTPClient();
 
-    const userId = useParams().userId; // userId is from (path="/:userId/places") in App.js
+    const userId = useParams().userId; // userId is from (path="/:userId/posts") in App.js
     
     useEffect(() => {
-        const fetchPlaces = async () => {
+        const fetchPosts = async () => {
             try {
                 const responseData = await sendRequest(
-                    `http://localhost:4000/api/places/user/${userId}`,
+                    `http://localhost:4000/api/posts/user/${userId}`,
 
                 );
-                setLoadedPlaces(responseData.places);
+                setLoadedPosts(responseData.posts);
             }
             catch (err) {}
             
         };
-        fetchPlaces();
+        fetchPosts();
     }, [sendRequest, userId]);
 
-    const deletePlaceHandler = deletedPlaceId => {
-        setLoadedPlaces(prePlace => prePlace.filter(place => place.id !== deletedPlaceId));
+    const deletePlaceHandler = deletedPostId => {
+        setLoadedPosts(prePost => prePost.filter(post => post.id !== deletedPostId));
     }
     
 
@@ -40,9 +40,9 @@ const UserPlaces = ()=>{
                 <LoadingSpinner />
             </div>
         )}
-        {!isLoading && loadedPlaces && 
-            <PlaceList 
-                items={loadedPlaces}
+        {!isLoading && loadedPosts && 
+            <PostList 
+                items={loadedPosts}
                 onDeletePlace={deletePlaceHandler}
                 showProfile={true}
             />
@@ -50,4 +50,4 @@ const UserPlaces = ()=>{
     </React.Fragment>;
 }
 
-export default UserPlaces;
+export default UserPosts;

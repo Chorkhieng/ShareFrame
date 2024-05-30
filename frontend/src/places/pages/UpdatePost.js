@@ -13,13 +13,13 @@ import {
 import { useForm } from '../../shared/hooks/form-hook';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
-import './PlaceForm.css';
+import './PostForm.css';
 
-const UpdatePlace = () => {
+const UpdatePost = () => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
-  const [loadedPlace, setLoadedPlace] = useState();
-  const placeId = useParams().placeId;
+  const [loadedPost, setLoadedPosts] = useState();
+  const postId = useParams().postId;
   const history = useHistory();
 
   const [formState, inputHandler, setFormData] = useForm(
@@ -40,17 +40,17 @@ const UpdatePlace = () => {
     const fetchPlace = async () => {
       try {
         const responseData = await sendRequest(
-          `http://localhost:4000/api/places/${placeId}`
+          `http://localhost:4000/api/posts/${postId}`
         );
-        setLoadedPlace(responseData.place);
+        setLoadedPosts(responseData.post);
         setFormData(
           {
             title: {
-              value: responseData.place.title,
+              value: responseData.post.title,
               isValid: true
             },
             description: {
-              value: responseData.place.description,
+              value: responseData.post.description,
               isValid: true
             }
           },
@@ -60,25 +60,24 @@ const UpdatePlace = () => {
       } catch (err) {}
     };
     fetchPlace();
-  }, [sendRequest, placeId, setFormData]);
+  }, [sendRequest, postId, setFormData]);
 
   const placeUpdateSubmitHandler = async event => {
     event.preventDefault();
     try {
       await sendRequest(
-        `http://localhost:4000/api/places/${placeId}`,
+        `http://localhost:4000/api/posts/${postId}`,
         'PATCH',
         JSON.stringify({
           title: formState.inputs.title,
           description: formState.inputs.description,
-          address: formState.inputs.address
         }),
         {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + auth.token
         }
       );
-      history.push('/' + auth.userId + '/places');
+      history.push('/' + auth.userId + '/post');
     } catch (err) {}
   };
 
@@ -90,7 +89,7 @@ const UpdatePlace = () => {
     );
   }
 
-  if (!loadedPlace && !error) {
+  if (!loadedPost && !error) {
     return (
       <div className="center">
         <Card>
@@ -103,7 +102,7 @@ const UpdatePlace = () => {
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
-      {!isLoading && loadedPlace && (
+      {!isLoading && loadedPost && (
         <form className="place-form" onSubmit={placeUpdateSubmitHandler}>
           <Input
             id="title"
@@ -113,7 +112,7 @@ const UpdatePlace = () => {
             validators={[VALIDATOR_REQUIRE()]}
             errorText="Please enter a valid title."
             onInput={inputHandler} 
-            initialValue={loadedPlace.title}
+            initialValue={loadedPost.title}
             initialValid={true}
           />
           <Input
@@ -123,7 +122,7 @@ const UpdatePlace = () => {
             validators={[VALIDATOR_MINLENGTH(5)]}
             errorText="Please enter a valid description (min. 5 characters)."
             onInput={inputHandler}
-            initialValue={loadedPlace.description}
+            initialValue={loadedPost.description}
             initialValid={true}
           />
 
@@ -136,4 +135,4 @@ const UpdatePlace = () => {
   );
 };
 
-export default UpdatePlace;
+export default UpdatePost;

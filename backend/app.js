@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const placesRoutes = require('./routes/place_routes');
+const placesRoutes = require('./routes/post_routes');
 const userRoutes = require('./routes/user_routes');
 const HTTPError = require('./models/htttp_error');
 const env = require("dotenv");
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/places', placesRoutes); // this will start with /api/places ......
+app.use('/api/posts', placesRoutes); // this will start with /api/places ......
 app.use('/api/users', userRoutes); // this will start with /api/users .....
 
 app.use((req, res, next) => {

@@ -1,5 +1,5 @@
 const express = require('express');
-const placesControllers = require('../controllers/places_controllers');
+const postsControllers = require('../controllers/posts_controllers');
 const { check } = require('express-validator');
 const fileUpload = require('../middleware/file_uplaod');
 const checkAuth = require('../middleware/check_auth');
@@ -10,13 +10,13 @@ const router = express.Router();
 router.get('/demo');
 
 // new feeds
-router.get('/all', placesControllers.getAllPosts);
+router.get('/all', postsControllers.getAllPosts);
 
 // get place by id
-router.get('/:placeId', placesControllers.getPlaceById);
+router.get('/:postId', postsControllers.getPostById);
 
 // get user by id
-router.get('/user/:userId', placesControllers.getPlacesUserId);
+router.get('/user/:userId', postsControllers.getPostsByUserId);
 
 //middleware for web token
 router.use(checkAuth);
@@ -30,16 +30,16 @@ router.post('/',
                 check('authorImage').not().isEmpty(),
                 check('authorName').not().isEmpty()
             ],
-            placesControllers.createPlace);
+            postsControllers.createPost);
 
-router.patch('/:placeId',
+router.patch('/:postId',
             [
                 check('title').not().isEmpty(),
                 check('description').isLength({min: 5}) // min length is 
             ],
-            placesControllers.updatePlaceById);
+            postsControllers.updatePostById);
 
-router.delete('/:placeId', placesControllers.deletePlaceById);
+router.delete('/:postId', postsControllers.deletePostById);
 
 
 // export 

@@ -13,9 +13,9 @@ import {
 import { useForm } from '../../shared/hooks/form-hook';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
-import './PlaceForm.css';
+import './PostForm.css';
 
-const NewPlace = () => {
+const NewPost = () => {
   const auth = useContext(AuthContext);
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
   const [formState, inputHandler] = useForm(
@@ -48,9 +48,9 @@ const NewPlace = () => {
       formData.append('authorImage', auth.image); // Directly access the image property from auth
       formData.append('authorName', auth.name); // Directly access the name property from auth
       formData.append('userId', auth.userId);
-      console.log(auth.image, auth.name);
+      // console.log(auth.image, auth.name);
 
-      await sendRequest('http://localhost:4000/api/places', 'POST', formData, {
+      await sendRequest('http://localhost:4000/api/posts', 'POST', formData, {
         Authorization: 'Bearer ' + auth.token
       });
       history.push('/');
@@ -93,4 +93,4 @@ const NewPlace = () => {
   );
 };
 
-export default NewPlace;
+export default NewPost;

@@ -3,30 +3,38 @@ import { useHTTPClient} from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
-import PlaceList from '../components/PlaceList';
+import PostList from '../components/PostList';
 
 
-const AllPosts = ()=>{
-    const [loadedPlaces, setLoadedPlaces] = useState();
+const AllPosts = () =>{
+    const [loadedPosts, setLoadedPosts] = useState();
     const {isLoading, error, sendRequest, clearError} = useHTTPClient();
+    const [hasRefreshed, setHasRefreshed] = useState(false); // Flag to track if data has been refreshed
     
     useEffect(() => {
-        const fetchPlaces = async () => {
+        const fetchAllPosts = async () => {
             try {
                 const responseData = await sendRequest(
-                    `http://localhost:4000/api/places/all`
+                    `http://localhost:4000/api/posts/all`
 
                 );
-                setLoadedPlaces(responseData.posts);
+                setLoadedPosts(responseData.posts);
+                setHasRefreshed(true);
             }
             catch (err) {}
             
         };
-        fetchPlaces();
-    }, [sendRequest]);
+        fetchAllPosts();
 
-    const deletePlaceHandler = deletedPlaceId => {
-        setLoadedPlaces(prePlace => prePlace.filter(place => place.id !== deletedPlaceId));
+        // Fetch data only if it hasn't been refreshed yet
+        if (!hasRefreshed) {
+            fetchAllPosts();
+        }
+    }, [sendRequest, hasRefreshed]);
+    
+
+    const deletePostHandler = deletedPostId => {
+        setLoadedPosts(prePost => prePost.filter(post => post.id !== deletedPostId));
     }
     
 
@@ -37,10 +45,10 @@ const AllPosts = ()=>{
                 <LoadingSpinner />
             </div>
         )}
-        {!isLoading && loadedPlaces && 
-            <PlaceList 
-                items={loadedPlaces} 
-                onDeletePlace={deletePlaceHandler}
+        {!isLoading && loadedPosts && 
+            <PostList 
+                items={loadedPosts} 
+                onDeletePost={deletePostHandler}
                 show={false}
             />
         }

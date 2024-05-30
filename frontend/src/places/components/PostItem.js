@@ -7,11 +7,11 @@ import { AuthContext } from '../../shared/context/auth_context';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-import './PlaceItem.css';
+import './PostItem.css';
 import Avatar from '../../shared/components/UIElements/Avatar'
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 
-const PlaceItem = props => {
+const PostItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
   const auth = useContext(AuthContext);
 
@@ -29,7 +29,7 @@ const PlaceItem = props => {
     setShowConfirmModal(false);
     try {
       await sendRequest(
-        `http://localhost:4000/api/places/${props.id}`,
+        `http://localhost:4000/api/posts/${props.id}`,
         'DELETE',
         null,
         {
@@ -98,7 +98,7 @@ const PlaceItem = props => {
                 React
               </Button>
               {auth.userId === props.creatorId && 
-                <Button to={`/places/${props.id}`}>
+                <Button to={`/posts/${props.id}`}>
                   Edit
                 </Button>
               }
@@ -116,4 +116,4 @@ const PlaceItem = props => {
   );
 };
 
-export default PlaceItem;
+export default PostItem;

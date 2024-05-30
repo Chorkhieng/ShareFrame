@@ -1,21 +1,22 @@
 import React, { useContext } from 'react';
 import Card from '../../shared/components/UIElements/Card';
-import PlaceItem from './PlaceItem';
+import PostItem from './PostItem';
 import Button from '../../shared/components/FormElements/Button';
 import { AuthContext } from '../../shared/context/auth_context';
 
-import './PlaceList.css';
+import './PostList.css';
 import Profile from '../../shared/components/UIElements/Profile';
 
-const PlaceList = props => {
+const PostList = props => {
     const auth = useContext(AuthContext);
     if (!props.items || props.items.length === 0) {
-        return <div className="place-list center">
+        
+        return (<div className="place-list center">
             <Card>
-                <h2> No post found.</h2>
-                {auth.userId && <Button to="/places/new">Create a Post</Button>}
+                <h2> No post found, but you can create one.</h2>
+                {auth.userId && <Button to="/posts/new">Create a Post</Button>}
             </Card>
-        </div>
+        </div>);
     }
 
     const { authorImage, authorName} = props.items[0];
@@ -30,21 +31,21 @@ const PlaceList = props => {
                 show={props.showProfile}
             />
             <ul className="place-list">
-                {props.items.map(place => 
-                    (<PlaceItem 
-                        key={place.id} 
-                        id={place.id} 
-                        image={place.image} 
-                        title={place.title} 
-                        description={place.description} 
-                        creatorId={place.creator} 
-                        authorImage={place.authorImage}
-                        authorName={place.authorName}
-                        onDelete={props.onDeletePlace}
+                {props.items.map(post => 
+                    (<PostItem 
+                        key={post.id} 
+                        id={post.id} 
+                        image={post.image} 
+                        title={post.title} 
+                        description={post.description} 
+                        creatorId={post.creator} 
+                        authorImage={post.authorImage}
+                        authorName={post.authorName}
+                        onDelete={props.onDeletePost}
                     />))
                 }
             </ul>
         </React.Fragment>);
 };
 
-export default PlaceList;
+export default PostList;
