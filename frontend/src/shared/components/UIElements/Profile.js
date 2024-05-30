@@ -13,6 +13,7 @@ const Profile = props => {
           <Avatar className="avatar profile-image" image={props.image} alt={props.name} />
             <Card className="card profile-name">
                 <h1>{props.name}</h1>
+                <p>{props.createdAt}</p>
             </Card>
           </Card>
       </React.Fragment>);

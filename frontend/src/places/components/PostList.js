@@ -43,6 +43,7 @@ const PostList = props => {
                         authorName={post.authorName}
                         likeCount={post.likes.length}
                         likes={post.likes}
+                        createdAt={post.createdAt}
                         onDelete={props.onDeletePost}
                     />))
                 }
