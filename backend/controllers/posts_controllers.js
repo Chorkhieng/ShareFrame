@@ -158,53 +158,62 @@ const createPost = async (req, res, next) => {
 
 
 const deletePostById = async (req, res, next) => {
-    const postId = req.params.postId;
+  const postId = req.params.postId;
 
-    let post;
+  let post;
 
-    try {
-        post = await Post.findById(postId).populate('creator'); // key relationship of place and user schemas
-    }
-    catch (err) {
-        const error = new HTTPError("Could not fetch the given postId.", 500);
-        return next(error);
-    }
-
-    if (!post) {
-      const error = new HTTPError("Could not find post for this id.", 404);
+  try {
+      post = await Post.findById(postId).populate('creator').populate('likes');
+  }
+  catch (err) {
+      const error = new HTTPError("Could not fetch the given postId.", 500);
       return next(error);
-    }
+  }
 
-    if (post.creator.id.toString() !== req.userData.userId) {
-      const error = new HTTPError("You are not authorized to delete this post.", 401);
+  if (!post) {
+    const error = new HTTPError("Could not find post for this id.", 404);
+    return next(error);
+  }
+
+  if (post.creator.id.toString() !== req.userData.userId) {
+    const error = new HTTPError("You are not authorized to delete this post.", 401);
+    return next(error);
+  }
+
+  const imagePath = post.image;
+
+  try {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      // Delete the post
+      await post.deleteOne({ session: session });
+
+      // Remove the post from the creator's posts array
+      post.creator.posts.pull(post);
+
+      // Remove the post ID from the likes array of all users who liked the post
+      for (const user of post.likes) {
+          user.likes.pull(postId);
+          await user.save({ session: session });
+      }
+
+      await post.creator.save({ session: session });
+      await session.commitTransaction();
+  }
+  catch (err) {
+      const error = new HTTPError("Could not delete the given postId.", 404);
       return next(error);
-    }
+  }
 
-    // image path is a string in database
-    const imagePath = post.image;
+  // Delete the associated image from the file system
+  fs.unlink(imagePath, err => {
+    console.log(err);
+  });
 
-    // deleting place
-    try {
-        const session = await mongoose.startSession();
-        session.startTransaction();
-
-        await post.deleteOne({session: session});
-        post.creator.posts.pull(post);
-
-        await post.creator.save({session: session});
-        await session.commitTransaction();
-    }
-    catch (err) {
-        const error = new HTTPError("Could not delete the given postId.", 404);
-        return next(error);
-    }
-
-    fs.unlink(imagePath, err => {
-      console.log(err);
-    })
-
-    res.status(200).json({message: "Post deleted"});
+  res.status(200).json({ message: "Post deleted" });
 };
+
 
 
 // get all posts for new feeds
