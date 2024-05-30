@@ -105,7 +105,11 @@ const PostItem = props => {
 
             <Card className="user-item__content author-item">
                 <div className="user-item__image">
-                  <Avatar image={`${props.authorImage}`} alt={props.name} />
+                  <Avatar 
+                    image={`${props.authorImage}`} 
+                    alt={props.name}
+                    style={{ border: '3px solid purple', borderRadius: '50%'}}
+                  />
                 </div>
                 <div>
                   <h3>{props.authorName}</h3>
