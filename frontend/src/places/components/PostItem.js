@@ -15,8 +15,11 @@ const PostItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
   const auth = useContext(AuthContext);
 
+  const isCurrentUserLiked = props.likes.includes(auth.userId);
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(isCurrentUserLiked ? 'Unlike' : 'Like');
+  const [likeCount, setLikeCount] = useState(props.likeCount);
 
   const showDeleteWarningHandler = () => {
     setShowConfirmModal(true);
@@ -59,6 +62,7 @@ const PostItem = props => {
 
       // Update the like status based on the response
       setIsLiked(responseData.message);
+      setLikeCount(responseData.likes);
     } catch (err) {
       // Handle errors
     }
@@ -114,8 +118,12 @@ const PostItem = props => {
           </div>
           {auth.userId && (
             <div className="place-item__actions">
+              <Button>
+                {likeCount <= 1 ? likeCount + " Like" : likeCount + " Likes"}
+              </Button>
+
               <Button onClick={handleLike} color={isLiked ? 'primary' : 'default'}>
-                {isLiked === 'Unliked' ? 'Like' : 'Unlike'}
+                {isLiked}
               </Button>
               {auth.userId === props.creatorId && 
                 <Button to={`/posts/${props.id}`}>

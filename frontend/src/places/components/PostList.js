@@ -41,6 +41,8 @@ const PostList = props => {
                         creatorId={post.creator} 
                         authorImage={post.authorImage}
                         authorName={post.authorName}
+                        likeCount={post.likes.length}
+                        likes={post.likes}
                         onDelete={props.onDeletePost}
                     />))
                 }

@@ -267,7 +267,7 @@ const likePost = async (req, res, next) => {
       return next(error);
   }
 
-  res.status(200).json({ message: isLiked ? "Unliked" : "Liked" });
+  res.status(200).json({ message: isLiked ? "Like" : "Unlike", likes: post.likes.length.toString() });
 };
 
 
