@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/post_routes');
 const userRoutes = require('./routes/user_routes');
+const commentRoutes = require('./routes/comment_routes');
 const HTTPError = require('./models/htttp_error');
 const env = require("dotenv");
 const fs = require('fs');
@@ -26,8 +27,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/posts', placesRoutes); // this will start with /api/places ......
+app.use('/api/posts', placesRoutes); // this will start with /api/posts ......
 app.use('/api/users', userRoutes); // this will start with /api/users .....
+app.use('/api/comments', commentRoutes); // this will start with /api/comments ....
 
 app.use((req, res, next) => {
     const err = new HTTPError("Could not find this route.", 404);

@@ -1,4 +1,6 @@
 const Comment = require('../models/comment');
+const { validationResult } = require('express-validator');
+const HTTPError = require('../models/htttp_error');
 const Post = require('../models/post');
 const User = require('../models/user');
 
@@ -11,8 +13,8 @@ const createComment = async (req, res, next) => {
       content,
       userId: userId,
       postId: postId,
-      parentComment: parentCommentId || null,
-      createdAt: new Date(),
+      parentComment: parentCommentId
+      // createdAt: new Date(),
     });
 
     if (parentCommentId) {
@@ -58,7 +60,85 @@ const getCommentsByPostId = async (req, res, next) => {
   }
 };
 
+// Update a comment by comment ID
+const updateComment = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HTTPError('Invalid inputs, please check your data.', 422));
+  }
+
+  const { content } = req.body;
+  const commentId = req.params.commentId;
+
+  let comment;
+  try {
+    comment = await Comment.findById(commentId);
+  } catch (err) {
+    const error = new HTTPError(
+      'Something went wrong, could not update comment.',
+      500
+    );
+    return next(error);
+  }
+
+  if (!comment) {
+    const error = new HTTPError('Could not find comment for the provided id.', 404);
+    return next(error);
+  }
+
+  comment.content = content;
+
+  try {
+    await comment.save();
+  } catch (err) {
+    const error = new HTTPError(
+      'Something went wrong, could not update comment.',
+      500
+    );
+    return next(error);
+  }
+
+  res.status(200).json({ comment: comment.toObject({ getters: true }) });
+};
+
+
+const createReply = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HTTPError('Invalid inputs provided, please check your data.', 422));
+  }
+
+  const { 
+    content, 
+    userId, 
+    postId,
+    parentCommentId // Use the same name as in the schema definition and validation middleware
+  } = req.body;
+
+  const newComment = new Comment({
+    content: content,
+    userId: userId,
+    postId: postId,
+    parentCommentId: parentCommentId, // Use the same name as in the schema definition and validation middleware
+    createdAt: new Date(),
+    replies: []
+  });
+
+  try {
+    await newComment.save();
+    // Assuming the parent comment exists and has the replies array field
+    await Comment.findByIdAndUpdate(parentCommentId, { $push: { replies: newComment._id } });
+  } catch (err) {
+    const error = new HTTPError('Creating reply failed, please try again.', 500);
+    return next(error);
+  }
+
+  res.status(201).json({ comment: newComment.toObject({ getters: true }) });
+};
+
 
 
 exports.createComment = createComment;
 exports.getCommentsByPostId = getCommentsByPostId;
+exports.updateComment = updateComment;
+exports.createReply = createReply;

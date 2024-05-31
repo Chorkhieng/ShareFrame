@@ -1,34 +1,61 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
+import { AuthContext } from '../../shared/context/auth_context';
+import { useForm } from '../../shared/hooks/form-hook';
+import Input from '../../shared/components/FormElements/Input';
+import Button from '../../shared/components/FormElements/Button';
+import { VALIDATOR_REQUIRE } from '../../shared/util/validators';
 
 const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
-  const [content, setContent] = useState('');
+  const auth = useContext(AuthContext);
   const { sendRequest } = useHTTPClient();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [formState, inputHandler] = useForm(
+    {
+      content: {
+        value: '',
+        isValid: false
+      }
+    },
+    false
+  );
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append('content', formState.inputs.content.value);
+      formData.append('userId', auth.userId);
+      formData.append('postId', postId);
+      formData.append('parentCommentId', parentCommentId);
+      // formData.append('replies', []);
       const responseData = await sendRequest(
-        `/api/posts/post/${postId}/comments`,
+        `http://localhost:4000/api/comments/reply/${postId}/comments`,
         'POST',
-        JSON.stringify({ content, parentComment: parentCommentId }),
-        { 'Content-Type': 'application/json' }
+        formData,
+        { 
+          Authorization: 'Bearer ' + auth.token 
+        }
       );
-      setContent('');
-      onCommentAdded(responseData.comment); // Assuming responseData contains the newly created comment
-    } catch (error) {
-      console.error('Error adding reply:', error);
-    }
+      if (onCommentAdded) {
+        onCommentAdded(responseData.comment);
+      }
+    } catch (error) { }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Reply to this comment"
+      <Input
+        id="content"
+        element="textarea"
+        label="Reply"
+        validators={[VALIDATOR_REQUIRE()]}
+        errorText="Please write your reply."
+        onInput={inputHandler}
       />
-      <button type="submit">Submit</button>
+      <Button type="submit" disabled={!formState.isValid}>
+        SUBMIT POST
+      </Button>
     </form>
   );
 };

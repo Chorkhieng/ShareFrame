@@ -15,7 +15,7 @@ const CommentList = ({ postId }) => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const responseData = await sendRequest(`http://localhost:4000/api/posts/post/${postId}/comments`);
+                const responseData = await sendRequest(`http://localhost:4000/api/comments/${postId}/comments`);
                 setComments(responseData.comments);
             } catch (error) {
                 console.error('Error fetching comments:', error);
@@ -33,7 +33,7 @@ const CommentList = ({ postId }) => {
         event.preventDefault();
         try {
             const responseData = await sendRequest(
-                `http://localhost:4000/api/posts/${postId}/comments`,
+                `http://localhost:4000/api/comments/${postId}/comments`,
                 'POST',
                 JSON.stringify({ content: newCommentContent }),
                 { 'Content-Type': 'application/json' }
