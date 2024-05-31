@@ -1,59 +1,72 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
-import { useForm } from '../../shared/hooks/form-hook';
-import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
-import { VALIDATOR_REQUIRE } from '../../shared/util/validators';
 
 const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
   const auth = useContext(AuthContext);
   const { sendRequest } = useHTTPClient();
 
-  const [formState, inputHandler] = useForm(
-    {
-      content: {
-        value: '',
-        isValid: false
-      }
-    },
-    false
-  );
+  const [content, setContent] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  const [errorText, setErrorText] = useState('');
+
+  const handleContentChange = (event) => {
+    const value = event.target.value;
+    setContent(value);
+    if (value.trim() !== '') {
+      setIsValid(true);
+      setErrorText('');
+    } else {
+      setIsValid(false);
+      setErrorText('Please write your reply.');
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!isValid) {
+      setErrorText('Please write your reply.');
+      return;
+    }
     try {
-      const formData = new FormData();
-      formData.append('content', formState.inputs.content.value);
-      formData.append('userId', auth.userId);
-      formData.append('postId', postId);
-      formData.append('parentCommentId', parentCommentId);
-      // formData.append('replies', []);
+      const payload = {
+        content: content,
+        userId: auth.userId,
+        postId: postId,
+        parentCommentId: parentCommentId
+      };
+      
       const responseData = await sendRequest(
         `http://localhost:4000/api/comments/reply/${postId}/comments`,
         'POST',
-        formData,
+        JSON.stringify(payload),
         { 
+          'Content-Type': 'application/json',
           Authorization: 'Bearer ' + auth.token 
         }
       );
       if (onCommentAdded) {
         onCommentAdded(responseData.comment);
       }
-    } catch (error) { }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input
-        id="content"
-        element="textarea"
-        label="Reply"
-        validators={[VALIDATOR_REQUIRE()]}
-        errorText="Please write your reply."
-        onInput={inputHandler}
-      />
-      <Button type="submit" disabled={!formState.isValid}>
+      <div className={`form-control ${!isValid && 'form-control--invalid'}`}>
+        <label htmlFor="content">Reply</label>
+        <textarea
+          id="content"
+          rows="5"
+          value={content}
+          onChange={handleContentChange}
+        />
+        {!isValid && <p>{errorText}</p>}
+      </div>
+      <Button type="submit" disabled={!isValid}>
         SUBMIT POST
       </Button>
     </form>

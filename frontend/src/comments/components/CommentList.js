@@ -26,7 +26,29 @@ const CommentList = ({ postId }) => {
     }, [postId, sendRequest]);
 
     const handleCommentAdded = (newComment) => {
-        setComments((prevComments) => [...prevComments, newComment]);
+        setComments((prevComments) => {
+            const addReplyToParent = (commentsList, parentId, reply) => {
+                return commentsList.map(comment => {
+                    if (comment._id === parentId) {
+                        return {
+                            ...comment,
+                            replies: [...comment.replies, reply]
+                        };
+                    } else {
+                        return {
+                            ...comment,
+                            replies: addReplyToParent(comment.replies, parentId, reply)
+                        };
+                    }
+                });
+            };
+
+            if (newComment.parentCommentId) {
+                return addReplyToParent(prevComments, newComment.parentCommentId, newComment);
+            } else {
+                return [...prevComments, newComment];
+            }
+        });
     };
 
     const submitCommentHandler = async (event) => {
@@ -44,6 +66,16 @@ const CommentList = ({ postId }) => {
         } catch (err) {
             // Handle error
         }
+    };
+
+    const renderComments = (comments, parentId = null) => {
+        return comments
+            .filter(comment => comment.parentCommentId === parentId)
+            .map(comment => (
+                <Comment key={comment._id} comment={comment} postId={postId} onCommentAdded={handleCommentAdded}>
+                    {renderComments(comments, comment._id)}
+                </Comment>
+            ));
     };
 
     return (
@@ -69,9 +101,7 @@ const CommentList = ({ postId }) => {
                             </Button>
                         </form>
                     )}
-                    {comments.map(comment => (
-                        <Comment key={comment._id} comment={comment} postId={postId} onCommentAdded={handleCommentAdded} />
-                    ))}
+                    {renderComments(comments)}
                 </div>
             )}
         </React.Fragment>

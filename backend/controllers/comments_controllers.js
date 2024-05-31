@@ -112,14 +112,14 @@ const createReply = async (req, res, next) => {
     content, 
     userId, 
     postId,
-    parentCommentId // Use the same name as in the schema definition and validation middleware
+    parentCommentId 
   } = req.body;
 
   const newComment = new Comment({
     content: content,
     userId: userId,
     postId: postId,
-    parentCommentId: parentCommentId, // Use the same name as in the schema definition and validation middleware
+    parentCommentId: parentCommentId, 
     createdAt: new Date(),
     replies: []
   });
@@ -135,7 +135,6 @@ const createReply = async (req, res, next) => {
 
   res.status(201).json({ comment: newComment.toObject({ getters: true }) });
 };
-
 
 
 exports.createComment = createComment;
