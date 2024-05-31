@@ -4,25 +4,22 @@ import axios from 'axios';
 const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated }) => {
   const [content, setContent] = useState(existingContent);
 
-  const handleUpdate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(`/api/posts/${postId}/comments/${commentId}`, {
-        content,
-      });
-      onCommentUpdated(response.data);
+      await axios.patch(`/api/posts/post/${postId}/comments/${commentId}`, { content });
+      onCommentUpdated();
     } catch (error) {
       console.error('Error updating comment:', error);
     }
   };
 
   return (
-    <form onSubmit={handleUpdate}>
+    <form onSubmit={handleSubmit}>
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        required
-      ></textarea>
+      />
       <button type="submit">Update</button>
     </form>
   );

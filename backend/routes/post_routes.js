@@ -7,6 +7,10 @@ const commentsControllers = require('../controllers/comments_controllers');
 
 const router = express.Router();
 
+// FOR TESTING ONLY
+// router.post('/post/:postId/comments', commentsControllers.createComment);
+// router.get('/post/:postId/comments', commentsControllers.getCommentsByPostId);
+
 // page demo
 router.get('/demo');
 
@@ -18,6 +22,10 @@ router.get('/:postId', postsControllers.getPostById);
 
 // get user by id
 router.get('/user/:userId', postsControllers.getPostsByUserId);
+
+// Comment routes
+router.post('/post/:postId/comments', commentsControllers.createComment);
+router.get('/post/:postId/comments', commentsControllers.getCommentsByPostId);
 
 //middleware for web token
 router.use(checkAuth);
@@ -44,10 +52,6 @@ router.patch('/:postId',
 router.patch('/:postId/like', postsControllers.likePost);
 
 router.delete('/:postId', postsControllers.deletePostById);
-
-// Comment routes
-router.post('/:postId/comments', commentsControllers.createComment);
-router.get('/:postId/comments', commentsControllers.getCommentsByPostId);
 
 
 // export 

@@ -7,14 +7,11 @@ const NewComment = ({ postId, onCommentAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/api/posts/${postId}/comments`, {
-        content,
-        userId: 'currentUserId', // Replace with the actual logged-in user ID
-      });
+      await axios.post(`/api/posts/post/${postId}/comments`, { content });
       setContent('');
-      onCommentAdded(response.data);
+      onCommentAdded();
     } catch (error) {
-      console.error('Error submitting comment:', error);
+      console.error('Error adding comment:', error);
     }
   };
 
@@ -23,9 +20,8 @@ const NewComment = ({ postId, onCommentAdded }) => {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a comment..."
-        required
-      ></textarea>
+        placeholder="Add a comment"
+      />
       <button type="submit">Submit</button>
     </form>
   );

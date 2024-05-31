@@ -7,15 +7,11 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/api/posts/${postId}/comments`, {
-        content,
-        userId: 'currentUserId', // Replace with the actual logged-in user ID
-        parentCommentId,
-      });
+      await axios.post(`/api/posts/post/${postId}/comments`, { content, parentComment: parentCommentId });
       setContent('');
-      onCommentAdded(response.data);
+      onCommentAdded();
     } catch (error) {
-      console.error('Error submitting reply:', error);
+      console.error('Error adding reply:', error);
     }
   };
 
@@ -24,9 +20,8 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Add a reply..."
-        required
-      ></textarea>
+        placeholder="Reply to this comment"
+      />
       <button type="submit">Submit</button>
     </form>
   );

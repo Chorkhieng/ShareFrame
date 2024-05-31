@@ -1,37 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useHTTPClient } from '../../shared/hooks/http-hook';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import NewComment from '../pages/NewComment';
-import Comment from './Comments';
+import Comment from './Comment';
 
 const CommentList = ({ postId }) => {
-  const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState([]);
+    const { isLoading, error, sendRequest, clearError } = useHTTPClient();
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axios.get(`/api/posts/${postId}/comments`);
-        setComments(response.data);
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const responseData = await sendRequest(`http://localhost:4000/api/posts/post/${postId}/comments`);
+                setComments(responseData.comments);
+                console.log("comments: ", responseData.comments)
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        };
+
+        fetchComments();
+    }, [postId, sendRequest]);
+
+    const handleCommentAdded = (newComment) => {
+        setComments((prevComments) => [...prevComments, newComment]);
     };
 
-    fetchComments();
-  }, [postId]);
-
-  const handleCommentAdded = (newComment) => {
-    setComments((prevComments) => [...prevComments, newComment]);
-  };
-
-  return (
-    <div>
-      <h2>Comments</h2>
-      <NewComment postId={postId} onCommentAdded={handleCommentAdded} />
-      {comments.map(comment => (
-        <Comment key={comment._id} comment={comment} postId={postId} onCommentAdded={handleCommentAdded} />
-      ))}
-    </div>
-  );
+    return (
+        <React.Fragment>
+            <ErrorModal error={error} onClear={clearError} />
+            {isLoading && <LoadingSpinner />}
+            {!isLoading && (
+                <div>
+                    <h2>Comments</h2>
+                    <NewComment postId={postId} onCommentAdded={handleCommentAdded} />
+                    {comments.map(comment => (
+                        <Comment key={comment._id} comment={comment} />
+                    ))}
+                </div>
+            )}
+        </React.Fragment>
+    );
 };
 
 export default CommentList;
