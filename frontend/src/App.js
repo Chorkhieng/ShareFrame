@@ -6,15 +6,15 @@ import {
 } from 'react-router-dom';
 
 import Users from './user/pages/Users';
-import NewPost from './places/pages/NewPost';
-import UserPosts from './places/pages/UserPosts';
-import UpdatePost from './places/pages/UpdatePost';
+import NewPost from './posts/pages/NewPost';
+import UserPosts from './posts/pages/UserPosts';
+import UpdatePost from './posts/pages/UpdatePost';
 import Auth from './user/pages/auth';
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 import { AuthContext } from './shared/context/auth_context';
 import { useAuth } from './shared/hooks/auth-hook';
 import PageDemo from './demo/PageDemo';
-import AllPosts from './places/pages/AllPosts';
+import AllPosts from './posts/pages/AllPosts';
 
 const App = () => {
   const {token, login, logout, userId, name, image} = useAuth();
