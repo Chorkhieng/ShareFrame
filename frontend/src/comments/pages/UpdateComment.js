@@ -9,7 +9,7 @@ const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated })
     e.preventDefault();
     try {
       await sendRequest(
-        `/api/posts/post/${postId}/comments/${commentId}`,
+        `/api/posts/comments/${postId}/comments/${commentId}`,
         'PATCH',
         JSON.stringify({ content }),
         { 'Content-Type': 'application/json' }

@@ -5,9 +5,13 @@ import Card from '../../shared/components/UIElements/Card';
 import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import Button from '../../shared/components/FormElements/Button';
+import { AuthContext } from '../../shared/context/auth_context';
+import { useContext } from 'react';
 import './CommentStyle.css';
 
 const Comment = ({ comment, postId, parentCommentId, onCommentAdded }) => {
+    const auth = useContext(AuthContext);
+    
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
 
@@ -37,9 +41,10 @@ const Comment = ({ comment, postId, parentCommentId, onCommentAdded }) => {
                     <Button onClick={() => setShowReplyForm(!showReplyForm)}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
                     </Button>
-                    <Button onClick={() => setShowUpdateForm(!showUpdateForm)}>
-                        {showUpdateForm ? 'Cancel' : 'Update'}
-                    </Button>
+                    {auth.userId === comment.userId.id && 
+                        <Button onClick={() => setShowUpdateForm(!showUpdateForm)}>
+                            {showUpdateForm ? 'Cancel' : 'Update'}
+                        </Button>}
                 </div>
                 {showReplyForm && (
                     <ReplyComment

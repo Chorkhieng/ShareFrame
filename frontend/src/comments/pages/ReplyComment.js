@@ -68,7 +68,7 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
         {!isValid && <p>{errorText}</p>}
       </div>
       <Button type="submit" disabled={!isValid}>
-        SUBMIT POST
+        SUBMIT
       </Button>
     </form>
   );

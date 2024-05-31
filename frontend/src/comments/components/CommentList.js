@@ -47,7 +47,7 @@ const CommentList = ({ postId }) => {
                 });
             };
 
-            if (newComment.parentCommentId) {
+            if (newComment.parentCommentId !== null) {
                 return addReplyToParent(prevComments, newComment.parentCommentId, newComment);
             } else {
                 return [...prevComments, newComment];
