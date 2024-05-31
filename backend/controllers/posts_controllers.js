@@ -29,7 +29,7 @@ const getPostById = async (req, res, next) => {
     }
   
     res.json({ post: post.toObject({ getters: true }) }); // => { place } => { place: place }
-  };
+};
 
 
 const getPostsByUserId = async (req, res, next) => {
@@ -38,7 +38,11 @@ const getPostsByUserId = async (req, res, next) => {
     let postWithUser;
 
     try {
-      postWithUser = await User.findById(userId).populate('posts');
+      // Fetch the user by userId and populate their posts, then sort the posts by createdAt field in descending order
+        postWithUser = await User.findById(userId).populate({ 
+          path: 'posts',
+          options: { sort: { createdAt: -1 } } // Sort posts by createdAt field in descending order
+        });
     }
     catch (err) {
         const error = new HTTPError("Could not fetch post(s) with given userId.", 500);
@@ -221,7 +225,7 @@ const getAllPosts = async (req, res, next) => {
   let allPosts;
 
   try {
-    allPosts = await Post.find();
+    allPosts = await Post.find().sort({ createdAt: -1 });
   } catch (err) {
     const error = new HTTPError("Could not fetch posts.", 500);
     return next(error);
