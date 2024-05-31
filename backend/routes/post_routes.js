@@ -3,6 +3,7 @@ const postsControllers = require('../controllers/posts_controllers');
 const { check } = require('express-validator');
 const fileUpload = require('../middleware/file_uplaod');
 const checkAuth = require('../middleware/check_auth');
+const commentsControllers = require('../controllers/comments_controllers');
 
 const router = express.Router();
 
@@ -43,6 +44,10 @@ router.patch('/:postId',
 router.patch('/:postId/like', postsControllers.likePost);
 
 router.delete('/:postId', postsControllers.deletePostById);
+
+// Comment routes
+router.post('/:postId/comments', commentsControllers.createComment);
+router.get('/:postId/comments', commentsControllers.getCommentsByPostId);
 
 
 // export 

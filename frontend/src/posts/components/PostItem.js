@@ -10,6 +10,7 @@ import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './PostItem.css';
 import Avatar from '../../shared/components/UIElements/Avatar'
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
+// import Comment from '../../comments/components/Comments';
 
 const PostItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
@@ -149,7 +150,7 @@ const PostItem = props => {
               }
             </div>)
           }
-          
+          {/* <Comment /> */}
         </Card>
       </li>
     </React.Fragment>
