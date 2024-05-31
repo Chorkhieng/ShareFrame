@@ -4,9 +4,13 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Button from '../../shared/components/FormElements/Button';
 import Comment from './Comment';
+import { AuthContext } from '../../shared/context/auth_context';
+import { useContext } from 'react';
 import './CommentStyle.css';
 
 const CommentList = ({ postId }) => {
+    const auth = useContext(AuthContext);
+
     const [comments, setComments] = useState([]);
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [newCommentContent, setNewCommentContent] = useState('');
@@ -57,9 +61,21 @@ const CommentList = ({ postId }) => {
             const responseData = await sendRequest(
                 `http://localhost:4000/api/comments/${postId}/comments`,
                 'POST',
-                JSON.stringify({ content: newCommentContent }),
-                { 'Content-Type': 'application/json' }
-            );
+                JSON.stringify(
+                    {
+                        content: newCommentContent,
+                        userId: auth.userId,
+                        postId: postId,
+                        parentCommentId: null
+                      }
+                      
+                ),
+                { 
+                  'Content-Type': 'application/json',
+                  Authorization: 'Bearer ' + auth.token 
+                }
+              );
+
             handleCommentAdded(responseData.comment);
             setShowCommentForm(false);
             setNewCommentContent('');

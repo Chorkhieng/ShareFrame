@@ -48,6 +48,7 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
       );
       if (onCommentAdded) {
         onCommentAdded(responseData.comment);
+        console.log(responseData.comment);
       }
     } catch (error) {
       console.error(error);

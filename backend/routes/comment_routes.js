@@ -16,6 +16,7 @@ router.post(
     '/:postId/comments',
     [
       check('content').not().isEmpty(),
+      check('userId').not().isEmpty()
     ],
     commentsControllers.createComment
 );

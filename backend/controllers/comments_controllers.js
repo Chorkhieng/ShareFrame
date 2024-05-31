@@ -5,16 +5,17 @@ const Post = require('../models/post');
 const User = require('../models/user');
 
 const createComment = async (req, res, next) => {
-  const { content, userId, parentCommentId } = req.body;
+  const { content: content, userId: userId, parentCommentId: parentCommentId} = req.body;
   const postId = req.params.postId;
 
   try {
     const newComment = new Comment({
-      content,
+      content: content,
       userId: userId,
       postId: postId,
-      parentComment: parentCommentId
-      // createdAt: new Date(),
+      parentCommentId: parentCommentId || null,
+      createdAt: new Date(),
+      replies: []
     });
 
     if (parentCommentId) {
@@ -61,45 +62,45 @@ const getCommentsByPostId = async (req, res, next) => {
 };
 
 // Update a comment by comment ID
-const updateComment = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new HTTPError('Invalid inputs, please check your data.', 422));
-  }
+// const updateComment = async (req, res, next) => {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     return next(new HTTPError('Invalid inputs, please check your data.', 422));
+//   }
 
-  const { content } = req.body;
-  const commentId = req.params.commentId;
+//   const { content } = req.body;
+//   const commentId = req.params.commentId;
 
-  let comment;
-  try {
-    comment = await Comment.findById(commentId);
-  } catch (err) {
-    const error = new HTTPError(
-      'Something went wrong, could not update comment.',
-      500
-    );
-    return next(error);
-  }
+//   let comment;
+//   try {
+//     comment = await Comment.findById(commentId);
+//   } catch (err) {
+//     const error = new HTTPError(
+//       'Something went wrong, could not update comment.',
+//       500
+//     );
+//     return next(error);
+//   }
 
-  if (!comment) {
-    const error = new HTTPError('Could not find comment for the provided id.', 404);
-    return next(error);
-  }
+//   if (!comment) {
+//     const error = new HTTPError('Could not find comment for the provided id.', 404);
+//     return next(error);
+//   }
 
-  comment.content = content;
+//   comment.content = content;
 
-  try {
-    await comment.save();
-  } catch (err) {
-    const error = new HTTPError(
-      'Something went wrong, could not update comment.',
-      500
-    );
-    return next(error);
-  }
+//   try {
+//     await comment.save();
+//   } catch (err) {
+//     const error = new HTTPError(
+//       'Something went wrong, could not update comment.',
+//       500
+//     );
+//     return next(error);
+//   }
 
-  res.status(200).json({ comment: comment.toObject({ getters: true }) });
-};
+//   res.status(200).json({ comment: comment.toObject({ getters: true }) });
+// };
 
 
 const createReply = async (req, res, next) => {
@@ -139,5 +140,5 @@ const createReply = async (req, res, next) => {
 
 exports.createComment = createComment;
 exports.getCommentsByPostId = getCommentsByPostId;
-exports.updateComment = updateComment;
+// exports.updateComment = updateComment;
 exports.createReply = createReply;
