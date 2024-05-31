@@ -51,7 +51,7 @@ const getCommentsByPostId = async (req, res, next) => {
         }
       });
 
-    res.json({comments : comments.map(p => p.toObject({getters: true}))});
+    res.json({comments : comments.map(c => c.toObject({getters: true}))});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Fetching comments failed, please try again.' });

@@ -8,7 +8,7 @@ import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import './PostItem.css';
-import Avatar from '../../shared/components/UIElements/Avatar'
+import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import CommentList from '../../comments/components/CommentList';
 
@@ -21,6 +21,7 @@ const PostItem = props => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isLiked, setIsLiked] = useState(isCurrentUserLiked ? 'Unlike' : 'Like');
   const [likeCount, setLikeCount] = useState(props.likeCount);
+  const [showComments, setShowComments] = useState(false);
 
   const showDeleteWarningHandler = () => {
     setShowConfirmModal(true);
@@ -104,20 +105,24 @@ const PostItem = props => {
         <Card className="place-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
 
-            <Card className="user-item__content author-item">
+          <Card className="user-item__content author-item" width="100%" height="100px">
                 <div className="user-item__image">
-                  <Avatar 
-                    image={`${props.authorImage}`} 
-                    alt={props.name}
-                    style={{ border: '3px solid purple', borderRadius: '50%'}}
-                  />
+                    <Avatar 
+                        image={props.authorImage} 
+                        alt={props.authorName}
+                        style={{ 
+                            border: '4px solid purple', 
+                            borderRadius: '50%',
+                            width: '40px',
+                            height: '40px'
+                        }}
+                    />
                 </div>
-                <div>
-                  <h3>{props.authorName}</h3>
-                  <p>{formatDate(props.createdAt)}</p>
+                <div className="comment-details">
+                    <h3>{props.authorName}</h3>
+                    <p>{new Date(props.createdAt).toLocaleString()}</p>
                 </div>
             </Card>
-
 
           <div className="place-item__image">
             <img src={`http://localhost:4000/${props.image}`} alt={props.title} />
@@ -138,7 +143,7 @@ const PostItem = props => {
               <Button onClick={handleLike} color={isLiked ? 'primary' : 'default'}>
                 {isLiked}
               </Button>
-              {auth.userId === props.creatorId && 
+              {auth.userId === props.creatorId &&
                 <Button to={`/posts/${props.id}`}>
                   Edit
                 </Button>
@@ -148,9 +153,12 @@ const PostItem = props => {
                   Delete
                 </Button>
               }
-            </div>)
-          }
-          <CommentList postId={props.id} />
+            </div>
+          )}
+          <Button center onClick={() => setShowComments(!showComments)}>
+            {showComments ? 'Hide Comments' : 'Show Comments'}
+          </Button>
+          {showComments && <CommentList postId={props.id} />}
         </Card>
       </li>
     </React.Fragment>

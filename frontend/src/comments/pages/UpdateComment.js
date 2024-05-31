@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useHTTPClient } from '../../shared/hooks/http-hook';
 
 const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated }) => {
   const [content, setContent] = useState(existingContent);
+  const { sendRequest } = useHTTPClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`/api/posts/post/${postId}/comments/${commentId}`, { content });
+      await sendRequest(
+        `/api/posts/post/${postId}/comments/${commentId}`,
+        'PATCH',
+        JSON.stringify({ content }),
+        { 'Content-Type': 'application/json' }
+      );
       onCommentUpdated();
     } catch (error) {
       console.error('Error updating comment:', error);
