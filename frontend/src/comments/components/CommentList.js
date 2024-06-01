@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import Button from '../../shared/components/FormElements/Button';
 import Comment from './Comment';
 import { AuthContext } from '../../shared/context/auth_context';
-import { useContext } from 'react';
 import './CommentStyle.css';
 
 const CommentList = ({ postId }) => {
     const auth = useContext(AuthContext);
-
     const [comments, setComments] = useState([]);
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [newCommentContent, setNewCommentContent] = useState('');
@@ -20,7 +18,9 @@ const CommentList = ({ postId }) => {
         const fetchComments = async () => {
             try {
                 const responseData = await sendRequest(`http://localhost:4000/api/comments/${postId}/comments`);
-                setComments(responseData.comments);
+                if (responseData && responseData.comments) {
+                    setComments(responseData.comments);
+                }
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
@@ -30,29 +30,7 @@ const CommentList = ({ postId }) => {
     }, [postId, sendRequest]);
 
     const handleCommentAdded = (newComment) => {
-        setComments((prevComments) => {
-            const addReplyToParent = (commentsList, parentId, reply) => {
-                return commentsList.map(comment => {
-                    if (comment._id === parentId) {
-                        return {
-                            ...comment,
-                            replies: [...comment.replies, reply]
-                        };
-                    } else {
-                        return {
-                            ...comment,
-                            replies: addReplyToParent(comment.replies, parentId, reply)
-                        };
-                    }
-                });
-            };
-
-            if (newComment.parentCommentId !== null) {
-                return addReplyToParent(prevComments, newComment.parentCommentId, newComment);
-            } else {
-                return [...prevComments, newComment];
-            }
-        });
+        setComments(prevComments => [...prevComments, newComment]);
     };
 
     const submitCommentHandler = async (event) => {
@@ -61,20 +39,17 @@ const CommentList = ({ postId }) => {
             const responseData = await sendRequest(
                 `http://localhost:4000/api/comments/${postId}/comments`,
                 'POST',
-                JSON.stringify(
-                    {
-                        content: newCommentContent,
-                        userId: auth.userId,
-                        postId: postId,
-                        parentCommentId: null
-                      }
-                      
-                ),
-                { 
-                  'Content-Type': 'application/json',
-                  Authorization: 'Bearer ' + auth.token 
+                JSON.stringify({
+                    content: newCommentContent,
+                    userId: auth.userId,
+                    postId: postId,
+                    parentCommentId: null
+                }),
+                {
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + auth.token
                 }
-              );
+            );
 
             handleCommentAdded(responseData.comment);
             setShowCommentForm(false);
@@ -82,16 +57,6 @@ const CommentList = ({ postId }) => {
         } catch (err) {
             // Handle error
         }
-    };
-
-    const renderComments = (comments, parentId = null) => {
-        return comments
-            .filter(comment => comment.parentCommentId === parentId)
-            .map(comment => (
-                <Comment key={comment._id} comment={comment} postId={postId} onCommentAdded={handleCommentAdded}>
-                    {renderComments(comments, comment._id)}
-                </Comment>
-            ));
     };
 
     return (
@@ -117,7 +82,17 @@ const CommentList = ({ postId }) => {
                             </Button>
                         </form>
                     )}
-                    {renderComments(comments)}
+
+                    {comments && comments.length > 0 && comments.map(comment => (
+                        comment && comment._id && !comment.parentCommentId && (
+                            <Comment
+                                key={comment._id}
+                                comment={comment}
+                                postId={postId}
+                                onCommentAdded={handleCommentAdded}
+                            />
+                        )
+                    ))}
                 </div>
             )}
         </React.Fragment>
