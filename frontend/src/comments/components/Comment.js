@@ -26,6 +26,16 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
         }
     };
 
+    const toggleReplyForm = () => {
+        setShowReplyForm(prevState => !prevState);
+        setShowUpdateForm(false); // Close update form if it's open
+    };
+
+    const toggleUpdateForm = () => {
+        setShowUpdateForm(prevState => !prevState);
+        setShowReplyForm(false); // Close reply form if it's open
+    };
+
     return (
         <React.Fragment>
             <Card className="comment-card">
@@ -49,11 +59,11 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                 </Card>
                 <ReadMore content={comment.content} maxLength={100} />
                 <div className="comment-actions">
-                    <Button onClick={() => setShowReplyForm(!showReplyForm)}>
+                    <Button onClick={toggleReplyForm}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
                     </Button>
                     {auth.userId === comment.userId.id && 
-                        <Button onClick={() => setShowUpdateForm(!showUpdateForm)}>
+                        <Button onClick={toggleUpdateForm}>
                             {showUpdateForm ? 'Cancel' : 'Update'}
                         </Button>}
                 </div>
