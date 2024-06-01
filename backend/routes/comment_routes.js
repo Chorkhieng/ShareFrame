@@ -22,13 +22,13 @@ router.post(
 );
 
 // Update a comment by comment ID
-// router.patch(
-//     '/post/:postId/comments/:commentId',
-//     [
-//       check('content').not().isEmpty(),
-//     ],
-//     commentsControllers.updateComment
-// );
+router.patch(
+    '/update/:postId/comment/:commentId',
+    [
+      check('content').not().isEmpty()
+    ],
+    commentsControllers.updateComment
+);
 
 // Route for creating a reply to a comment
 router.post(
