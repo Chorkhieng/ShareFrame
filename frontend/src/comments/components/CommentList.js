@@ -77,7 +77,7 @@ const CommentList = ({ postId }) => {
                                 onChange={(e) => setNewCommentContent(e.target.value)}
                                 placeholder="Write your comment here..."
                             />
-                            <Button type="submit" disabled={!newCommentContent.trim()}>
+                            <Button type="submit" disabled={!newCommentContent.trim()} onClick={() => window.location.reload()}>
                                 Submit
                             </Button>
                         </form>

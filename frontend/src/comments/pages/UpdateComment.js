@@ -46,7 +46,7 @@ const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated })
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} onClick={() => window.location.reload()}>
           {isLoading ? 'Updating...' : 'Update'}
         </Button>
       </form>
