@@ -139,8 +139,48 @@ const createReply = async (req, res, next) => {
   res.status(201).json({ comment: newComment.toObject({ getters: true }) });
 };
 
+// DELETE /comments/:id
+const deleteCommentById = async (req, res) => {
+  const commentId = req.params.commentId;
+
+  try {
+    // Find the comment by ID
+    const comment = await Comment.findById(commentId);
+
+    // Check if the comment exists
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Find the parent comment, if any
+    const parentComment = await Comment.findOneAndUpdate(
+      { replies: commentId },
+      { $pull: { replies: commentId } }
+    );
+
+    // Remove the comment from its parent's replies array
+    if (parentComment) {
+      await parentComment.save();
+    }
+
+    // Delete all comments that directly reply to this comment
+    await Comment.deleteMany({ parentCommentId: commentId });
+
+    // Delete the comment
+    await comment.deleteOne();
+
+    // Return success response
+    res.json({ message: 'Comment deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 
 exports.createComment = createComment;
 exports.getCommentsByPostId = getCommentsByPostId;
 exports.updateComment = updateComment;
 exports.createReply = createReply;
+exports.deleteCommentById = deleteCommentById;

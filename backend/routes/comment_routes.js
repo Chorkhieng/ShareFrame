@@ -4,9 +4,15 @@ const checkAuth = require('../middleware/check_auth');
 const commentsControllers = require('../controllers/comments_controllers');
 const router = express.Router();
 
+
+// FOR TESTING ONLY
+router.delete(
+  '/:commentId/comments',
+  commentsControllers.deleteCommentById
+);
+
 // Comment routes
 router.get('/:postId/comments', commentsControllers.getCommentsByPostId);
-
 
 //middleware for web token
 router.use(checkAuth);
@@ -41,6 +47,12 @@ router.post(
     ],
     commentsControllers.createReply
 );
+
+// Route for creating a reply to a comment
+// router.delete(
+//   '/:commentId/comments',
+//   commentsControllers.createReply
+// );
 
 
 
