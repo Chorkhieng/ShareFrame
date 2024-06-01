@@ -84,14 +84,13 @@ const CommentList = ({ postId }) => {
                     )}
 
                     {comments && comments.length > 0 && comments.map(comment => (
-                        comment && comment._id && !comment.parentCommentId && (
-                            <Comment
-                                key={comment._id}
-                                comment={comment}
-                                postId={postId}
-                                onCommentAdded={handleCommentAdded}
-                            />
-                        )
+                        !comment?.parentCommentId &&
+                        <Comment
+                            key={comment?._id}
+                            comment={comment}
+                            postId={postId}
+                            onCommentAdded={handleCommentAdded}
+                        />
                     ))}
                 </div>
             )}

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import ReplyComment from '../pages/ReplyComment';
 import UpdateComment from '../pages/UpdateComment';
 import Card from '../../shared/components/UIElements/Card';
@@ -6,6 +6,7 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import Button from '../../shared/components/FormElements/Button';
 import { AuthContext } from '../../shared/context/auth_context';
+import { useContext } from 'react';
 import './CommentStyle.css';
 
 const Comment = ({ comment, postId, onCommentAdded }) => {
@@ -17,6 +18,13 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
     if (!comment || !comment.userId) {
         return null;
     }
+
+    const handleCommentAdded = (newComment) => {
+        // Call the function passed from the parent component to update comments
+        if (onCommentAdded) {
+            onCommentAdded(newComment);
+        }
+    };
 
     return (
         <React.Fragment>
@@ -39,7 +47,7 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                         <p>{new Date(comment.createdAt).toLocaleString()}</p>
                     </div>
                 </Card>
-                <ReadMore content={comment.content} maxLength={140} />
+                <ReadMore content={comment.content} maxLength={100} />
                 <div className="comment-actions">
                     <Button onClick={() => setShowReplyForm(!showReplyForm)}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
@@ -53,7 +61,7 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                     <ReplyComment
                         postId={postId}
                         parentCommentId={comment._id}
-                        onCommentAdded={onCommentAdded}
+                        onCommentAdded={handleCommentAdded} // Pass the function to handle comment addition
                     />
                 )}
                 {showUpdateForm && (
@@ -66,7 +74,7 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                 )}
                 <div className="comment-replies">
                     {comment.replies && comment.replies.length > 0 && comment.replies.map(reply => (
-                        <Comment key={reply._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} />
+                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} />
                     ))}
                 </div>
             </Card>
