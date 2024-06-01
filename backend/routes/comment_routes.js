@@ -11,6 +11,11 @@ router.delete(
   commentsControllers.deleteCommentById
 );
 
+router.delete(
+  '/post/:postId/comments',
+  commentsControllers.deleteCommentByPostId
+);
+
 // Comment routes
 router.get('/:postId/comments', commentsControllers.getCommentsByPostId);
 
@@ -48,10 +53,16 @@ router.post(
     commentsControllers.createReply
 );
 
-// Route for creating a reply to a comment
+// delete comment by commentId
 // router.delete(
 //   '/:commentId/comments',
 //   commentsControllers.createReply
+// );
+
+// delete all comments with a postId
+// router.delete(
+//   '/post/:postId/comments',
+//   commentsControllers.deleteCommentByPostId
 // );
 
 

@@ -178,9 +178,30 @@ const deleteCommentById = async (req, res) => {
 };
 
 
+// DELETE /comments/post/:postId
+const deleteCommentByPostId = async (req, res) => {
+  const postId = req.params.postId;
+
+  try {
+    // Find all comments with the specified postId
+    const commentsToDelete = await Comment.find({ postId });
+
+    // Delete all comments with the specified postId
+    await Comment.deleteMany({ postId });
+
+    // Return success response
+    res.json({ message: 'Comments deleted successfully', count: commentsToDelete.length });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 
 exports.createComment = createComment;
 exports.getCommentsByPostId = getCommentsByPostId;
 exports.updateComment = updateComment;
 exports.createReply = createReply;
 exports.deleteCommentById = deleteCommentById;
+exports.deleteCommentByPostId = deleteCommentByPostId;

@@ -1,5 +1,5 @@
 .comment-card {
-    width: fit-content !important;
+    width: 100% !important;
     /* font-size: small; */
     margin: 2px;
 }
@@ -38,6 +38,7 @@
     margin: 0;
     font-size: small;
     padding: 0.2rem;
+    width: fit-content;
   }
   
   .comment-details h4 {
