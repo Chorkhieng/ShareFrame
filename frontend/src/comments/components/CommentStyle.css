@@ -1,36 +1,59 @@
 .comment-card {
-    width: 100% !important;
+    width: fit-content !important;
+    /* font-size: small; */
+    margin: 2px;
 }
 
 .user-item__content.author-item {
     display: flex;
     align-items: center;
-    padding: 0.2rem;
-    border: 2px solid #ccc;
+    padding: 0.1rem;
+    border: 1px solid #ccc;
     border-radius: 8px;
     background: #f9f9f9;
     width: 100%;
-    height: 70px; /* Fixed height */
+    height: 60px; /* Fixed height */
   }
   
   .user-item__image {
-    margin-right: 0.2rem;
+    margin-right: 0.1rem;
+  }
+
+  .commenter-avatar {
+    width: 40px;
+    height: 40px;
   }
   
   .comment-details {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Vertically center content */
-    margin-left: 0.5rem; /* Reduce margin to make it closer */
+    justify-content: center;
+    margin-left: 0.5rem; 
+    font-size: small;
+  }
+
+  .comment-content {
+    border: 1px solid grey;
+    border-radius: 2%;
+    margin: 0;
+    font-size: small;
+    padding: 0.2rem;
   }
   
   .comment-details h4 {
+    margin-bottom: 0.25rem;
+    margin-top: 0;
+  }
+
+  .comment-details h5 {
     margin-bottom: 0.25rem; /* Adjust as needed */
     margin-top: 0; /* Remove top margin */
+    margin-right: 2rem;
   }
   
   .comment-details p {
-    margin: 0; /* Remove all margins */
+    margin: 0;
+    margin-right: 5px;
   }
   
   .comment-actions {

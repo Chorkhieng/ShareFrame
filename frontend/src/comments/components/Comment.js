@@ -14,6 +14,7 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
     
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [showContent, setShowContent] = useState(true); // State to control content visibility
 
     if (!comment || !comment.userId) {
         return null;
@@ -36,11 +37,15 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
         setShowReplyForm(false); // Close reply form if it's open
     };
 
+    const toggleContent = () => {
+        setShowContent(prevState => !prevState); // Toggle content visibility
+    };
+
     return (
         <React.Fragment>
             <Card className="comment-card">
-                <Card className="user-item__content author-item" width="100%" height="70px">
-                    <div className="user-item__image">
+                <div className="user-item__content" width="100%" height="40px">
+                    <div className="user-item__image commenter-avatar">
                         <Avatar 
                             image={comment.userId.image} 
                             alt={comment.userId.name}
@@ -53,11 +58,17 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                         />
                     </div>
                     <div className="comment-details">
-                        <h4>{comment.userId.name}</h4>
+                        <h5>{comment.userId.name}</h5>
                         <p>{new Date(comment.createdAt).toLocaleString()}</p>
                     </div>
-                </Card>
-                <ReadMore content={comment.content} maxLength={100} />
+                    <Button onClick={toggleContent}>
+                        {showContent ? 'Hide' : 'Show'}
+                    </Button>
+                </div>
+                <div className="comment-content">
+                    {showContent && <ReadMore content={comment.content} maxLength={100} />}
+                </div>
+                
                 <div className="comment-actions">
                     <Button onClick={toggleReplyForm}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
@@ -82,9 +93,9 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                         onCommentUpdated={onCommentAdded}
                     />
                 )}
-                <div className="comment-replies">
+                <div className="comment-replies" style={{ display: showContent ? 'block' : 'none' }}>
                     {comment.replies && comment.replies.length > 0 && comment.replies.map(reply => (
-                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} />
+                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} showContentProp={showContent} />
                     ))}
                 </div>
             </Card>
