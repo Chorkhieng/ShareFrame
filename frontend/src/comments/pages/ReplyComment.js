@@ -2,10 +2,11 @@ import React, { useState, useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
 import Button from '../../shared/components/FormElements/Button';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 
-const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
+const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments }) => {
   const auth = useContext(AuthContext);
-  const { sendRequest } = useHTTPClient();
+  const { isLoading, error, clearError, sendRequest } = useHTTPClient();
 
   const [content, setContent] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -29,6 +30,7 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
       setErrorText('Please write your reply.');
       return;
     }
+
     try {
       const payload = {
         content: content,
@@ -48,29 +50,32 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded }) => {
       );
       if (onCommentAdded) {
         onCommentAdded(responseData.comment);
-        console.log(responseData.comment);
+        refreshComments(); // Refresh comments data
       }
+      setContent(''); // Clear the content after successful submission
     } catch (error) {
-      console.error(error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className={`form-control ${!isValid && 'form-control--invalid'}`}>
-        <label htmlFor="content">Reply</label>
-        <textarea
-          id="content"
-          rows="5"
-          value={content}
-          onChange={handleContentChange}
-        />
-        {!isValid && <p>{errorText}</p>}
-      </div>
-      <Button type="submit" disabled={!isValid} onClick={() => window.location.reload()}>
-        SUBMIT
-      </Button>
-    </form>
+    <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      <form onSubmit={handleSubmit}>
+        <div className={`form-control ${!isValid && 'form-control--invalid'}`}>
+          <label htmlFor="content">Reply</label>
+          <textarea
+            id="content"
+            rows="5"
+            value={content}
+            onChange={handleContentChange}
+          />
+          {!isValid && <p>{errorText}</p>}
+        </div>
+        <Button type="submit" disabled={!isValid || isLoading}>
+          {isLoading ? 'Submitting...' : 'Submit'}
+        </Button>
+      </form>
+    </React.Fragment>
   );
 };
 

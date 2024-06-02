@@ -1,21 +1,17 @@
-import React, { useState } from 'react';
+// UpdateComment.js
+import React, { useState, useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
-import { useContext } from 'react';
 import { AuthContext } from '../../shared/context/auth_context';
 import Button from '../../shared/components/FormElements/Button';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 
-const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated }) => {
+const UpdateComment = ({ postId, commentId, existingContent, refreshComments, onCommentUpdated }) => {
   const auth = useContext(AuthContext);
   const [content, setContent] = useState(existingContent);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const { sendRequest } = useHTTPClient();
+  const { isLoading, error, clearError, sendRequest } = useHTTPClient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError(null);
 
     try {
       const payload = {
@@ -31,22 +27,27 @@ const UpdateComment = ({ postId, commentId, existingContent, onCommentUpdated })
           Authorization: 'Bearer ' + auth.token 
         }
       );
-      onCommentUpdated();
+
+      if (onCommentUpdated) {
+        onCommentUpdated();
+      }
+      
+      // Call the refresh function after successful update
+      refreshComments();
     } catch (error) {
-      setError(error.message || 'Something went wrong, please try again.');
+      // Handle error
     }
-    setIsLoading(false);
   };
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={() => setError(null)} />
+      <ErrorModal error={error} onClear={clearError} />
       <form className="new-comment-form" onSubmit={handleSubmit}>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <Button type="submit" disabled={isLoading} onClick={() => window.location.reload()}>
+        <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Updating...' : 'Update'}
         </Button>
       </form>
