@@ -15,6 +15,22 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
     const [showUpdateForm, setShowUpdateForm] = useState(false);
     const [showContent, setShowContent] = useState(true); // State to control content visibility
 
+    // Function to calculate the number of days passed since the comment was created
+    const getDaysPassed = (createdAt) => {
+        const commentDate = new Date(createdAt);
+        const currentDate = new Date();
+        const differenceInTime = currentDate.getTime() - commentDate.getTime();
+        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+
+        if (differenceInDays === 1) {
+            return "Yesterday";
+        }
+        if (differenceInDays === 0) {
+            return "Today";
+        }
+        return differenceInDays.toString() + "days ago";
+    };
+
     if (!comment || !comment.userId) {
         return null;
     }
@@ -42,8 +58,8 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
     return (
         <React.Fragment>
             <Card className="comment-card">
-                <Card className="user-item__content author-item" width="100%" height="70px">
-                    <div className="user-item__image">
+                <Card className="user-item__content" width="fit-content" height="40px">
+                    <div className="user-item__image commenter-avatar">
                         <Avatar 
                             image={comment.userId.image} 
                             alt={comment.userId.name}
@@ -56,20 +72,22 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
                         />
                     </div>
                     <div className="comment-details">
-                        <h4>{comment.userId.name}</h4>
-                        <p>{new Date(comment.createdAt).toLocaleString()}</p>
+                        <h5>{comment.userId.name}</h5>
+                        <p>{getDaysPassed(comment.createdAt)}</p>
                     </div>
-                    <Button onClick={toggleContent}>
+                    <button onClick={toggleContent}>
                         {showContent ? 'Hide' : 'Show'}
-                    </Button>
+                    </button>
                 </Card>
-                {showContent && <ReadMore content={comment.content} maxLength={100} />}
-                <div className="comment-actions">
+                <div className="comment-content">
+                    {showContent && <ReadMore content={comment.content} maxLength={100} />}
+                </div>
+                <div className="comment-actions" style={{ display: showContent ? 'block' : 'none' }}>
                     <Button onClick={toggleReplyForm}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
                     </Button>
                     {auth.userId === comment.userId.id && 
-                        <Button onClick={toggleUpdateForm}>
+                        <Button onClick={toggleUpdateForm}> 
                             {showUpdateForm ? 'Cancel' : 'Update'}
                         </Button>}
                 </div>
@@ -90,7 +108,7 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
                         refreshComments={refreshComments}
                     />
                 )}
-                <div className="comment-replies">
+                <div className="comment-replies" style={{ display: showContent ? 'block' : 'none' }}>
                     {comment.replies && comment.replies.length > 0 && comment.replies.map(reply => (
                         <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} refreshComments={refreshComments} />
                     ))}

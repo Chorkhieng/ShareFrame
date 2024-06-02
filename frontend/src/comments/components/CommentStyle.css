@@ -20,8 +20,8 @@
   }
 
   .commenter-avatar {
-    width: 40px;
-    height: 40px;
+    width: fit-content;
+    height: 30px;
   }
   
   .comment-details {
@@ -33,17 +33,16 @@
   }
 
   .comment-content {
-    border: 1px solid grey;
-    border-radius: 2%;
+    /* border: 1px solid grey; */
     margin: 0;
-    font-size: small;
-    padding: 0.2rem;
+    font-size: smaller;
     width: 90%;
   }
   
-  .comment-details h4 {
+  .comment-details h3 {
     margin-bottom: 0.25rem;
     margin-top: 0;
+    font-size: larger;
   }
 
   .comment-details h5 {

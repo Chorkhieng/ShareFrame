@@ -32,6 +32,7 @@
 
 .place-item__info {
   width: 100%;
+  font-size: medium;
 }
 
 .place-item__actions {

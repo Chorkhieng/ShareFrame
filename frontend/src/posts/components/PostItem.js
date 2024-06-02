@@ -12,6 +12,42 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import CommentList from '../../comments/components/CommentList';
 
+
+const getFormattedDate = (dateString) => {
+  const date = new Date(dateString);
+  const currentDate = new Date();
+
+  // Check if the date is today
+  if (date.getDate() === currentDate.getDate() && date.getMonth() === currentDate.getMonth() && date.getFullYear() === currentDate.getFullYear()) {
+      // Format time
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `Today at ${hours}:${minutes}`;
+  }
+
+  // Check if the date is yesterday
+  const yesterday = new Date(currentDate);
+  yesterday.setDate(currentDate.getDate() - 1);
+  if (date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear()) {
+      // Format time
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `Yesterday at ${hours}:${minutes}`;
+  }
+
+  // Format date to show month, day, year, along with time
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  };
+  const formattedDate = date.toLocaleString('en-US', options);
+  return formattedDate.replace(',', '');
+};
+
 const PostItem = props => {
   const { isLoading, error, sendRequest, clearError } = useHTTPClient();
   const auth = useContext(AuthContext);
@@ -23,6 +59,8 @@ const PostItem = props => {
   const [likeCount, setLikeCount] = useState(props.likeCount);
   const [showComments, setShowComments] = useState(false);
 
+  const [showContent, setShowContent] = useState(true); // State to control content visibility
+
   const showDeleteWarningHandler = () => {
     setShowConfirmModal(true);
   };
@@ -30,6 +68,10 @@ const PostItem = props => {
   const cancelDeleteHandler = () => {
     setShowConfirmModal(false);
   };
+
+  const toggleContent = () => {
+    setShowContent(prevState => !prevState); // Toggle content visibility
+};
 
   const confirmDeleteHandler = async () => {
     setShowConfirmModal(false);
@@ -98,7 +140,7 @@ const PostItem = props => {
         <Card className="place-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
 
-          <Card className="user-item__content author-item" width="100%" height="100px">
+          <Card className="user-item__content author-item" width="100%" height="80px">
                 <div className="user-item__image">
                     <Avatar 
                         image={props.authorImage} 
@@ -113,22 +155,26 @@ const PostItem = props => {
                 </div>
                 <div className="comment-details">
                     <h3>{props.authorName}</h3>
-                    <p>{new Date(props.createdAt).toLocaleString()}</p>
+                    <p>{getFormattedDate(props.createdAt)}</p>
                 </div>
+
+                <button onClick={toggleContent}>
+                    {showContent ? 'Hide' : 'Show'}
+                </button>
             </Card>
 
-          <div className="place-item__image">
+          <div className="place-item__image" style={{ display: showContent ? 'block' : 'none' }}>
             <img src={`http://localhost:4000/${props.image}`} alt={props.title} />
           </div>
 
-          <div className="place-item__info">
+          <div className="place-item__info" style={{ display: showContent ? 'block' : 'none' }}>
             <Card>
-              <h4 className='title-item'>{props.title}</h4>
+              <h4 className='title-item' style={{ display: showContent ? 'block' : 'none' }} >{props.title}</h4>
               <ReadMore content={props.description} maxLength={140} />
             </Card>
           </div>
           {auth.userId && (
-            <div className="place-item__actions">
+            <div className="place-item__actions" style={{ display: showContent ? 'block' : 'none' }}>
               <Button>
                 {likeCount <= 1 ? likeCount + " Like" : likeCount + " Likes"}
               </Button>
@@ -148,9 +194,9 @@ const PostItem = props => {
               }
             </div>
           )}
-          <Button center onClick={() => setShowComments(!showComments)}>
+          <button center onClick={() => setShowComments(!showComments)} >
             {showComments ? 'Hide Comments' : 'Show Comments'}
-          </Button>
+          </button>
           {showComments && <CommentList postId={props.id} />}
         </Card>
       </li>

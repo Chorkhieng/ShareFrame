@@ -3,7 +3,6 @@ import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
 import Button from '../../shared/components/FormElements/Button';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
-import '../components/CommentStyle.css';
 
 const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments }) => {
   const auth = useContext(AuthContext);
