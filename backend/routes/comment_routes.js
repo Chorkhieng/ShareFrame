@@ -6,10 +6,10 @@ const router = express.Router();
 
 
 // FOR TESTING ONLY
-router.delete(
-  '/:commentId/comments',
-  commentsControllers.deleteCommentById
-);
+// router.delete(
+//   '/:commentId/comments',
+//   commentsControllers.deleteCommentById
+// );
 
 router.delete(
   '/post/:postId/comments',
@@ -54,10 +54,10 @@ router.post(
 );
 
 // delete comment by commentId
-// router.delete(
-//   '/:commentId/comments',
-//   commentsControllers.createReply
-// );
+router.delete(
+  '/:commentId/comments',
+  commentsControllers.deleteCommentById
+);
 
 // delete all comments with a postId
 // router.delete(

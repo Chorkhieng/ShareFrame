@@ -6,9 +6,9 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import Button from '../../shared/components/FormElements/Button';
 import { AuthContext } from '../../shared/context/auth_context';
-import './CommentStyle.css';
+import DeleteComment from '../pages/DeleteComment';
 
-const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
+const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete }) => {
     const auth = useContext(AuthContext);
     
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -86,10 +86,19 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
                     <Button onClick={toggleReplyForm}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
                     </Button>
-                    {auth.userId === comment.userId.id && 
-                        <Button onClick={toggleUpdateForm}> 
-                            {showUpdateForm ? 'Cancel' : 'Update'}
-                        </Button>}
+                    {auth.userId === comment.userId.id && (
+                        <React.Fragment>
+                            <Button onClick={toggleUpdateForm}>
+                                {showUpdateForm ? 'Cancel' : 'Update'}
+                            </Button>
+                            <DeleteComment 
+                                commentId={comment._id} 
+                                onDelete={onDelete} 
+                                refreshComments={refreshComments}
+                            />
+                        </React.Fragment>
+                    )}
+
                 </div>
                 {showReplyForm && (
                     <ReplyComment
@@ -110,7 +119,7 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments }) => {
                 )}
                 <div className="comment-replies" style={{ display: showContent ? 'block' : 'none' }}>
                     {comment.replies && comment.replies.length > 0 && comment.replies.map(reply => (
-                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} refreshComments={refreshComments} />
+                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} refreshComments={refreshComments} onDelete={onDelete} />
                     ))}
                 </div>
             </Card>
