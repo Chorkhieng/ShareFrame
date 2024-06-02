@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
@@ -14,20 +14,20 @@ const CommentList = ({ postId }) => {
     const [newCommentContent, setNewCommentContent] = useState('');
     const { isLoading, error, sendRequest, clearError } = useHTTPClient();
 
-    useEffect(() => {
-        const fetchComments = async () => {
-            try {
-                const responseData = await sendRequest(`http://localhost:4000/api/comments/${postId}/comments`);
-                if (responseData && responseData.comments) {
-                    setComments(responseData.comments);
-                }
-            } catch (error) {
-                console.error('Error fetching comments:', error);
+    const fetchComments = useCallback(async () => {
+        try {
+            const responseData = await sendRequest(`http://localhost:4000/api/comments/${postId}/comments`);
+            if (responseData && responseData.comments) {
+                setComments(responseData.comments);
             }
-        };
-
-        fetchComments();
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
     }, [postId, sendRequest]);
+
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
 
     const handleCommentAdded = (newComment) => {
         setComments(prevComments => [...prevComments, newComment]);
@@ -36,7 +36,7 @@ const CommentList = ({ postId }) => {
     const submitCommentHandler = async (event) => {
         event.preventDefault();
         try {
-            const responseData = await sendRequest(
+            await sendRequest(
                 `http://localhost:4000/api/comments/${postId}/comments`,
                 'POST',
                 JSON.stringify({
@@ -51,9 +51,9 @@ const CommentList = ({ postId }) => {
                 }
             );
 
-            handleCommentAdded(responseData.comment);
-            setShowCommentForm(false);
             setNewCommentContent('');
+            setShowCommentForm(false);
+            fetchComments();  // Refetch comments after submission
         } catch (err) {
             // Handle error
         }
@@ -77,7 +77,7 @@ const CommentList = ({ postId }) => {
                                 onChange={(e) => setNewCommentContent(e.target.value)}
                                 placeholder="Write your comment here..."
                             />
-                            <Button type="submit" disabled={!newCommentContent.trim()} onClick={() => window.location.reload()}>
+                            <Button type="submit" disabled={!newCommentContent.trim()}>
                                 Submit
                             </Button>
                         </form>

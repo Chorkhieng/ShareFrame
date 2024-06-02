@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import ReplyComment from '../pages/ReplyComment';
 import UpdateComment from '../pages/UpdateComment';
 import Card from '../../shared/components/UIElements/Card';
@@ -6,7 +6,6 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import Button from '../../shared/components/FormElements/Button';
 import { AuthContext } from '../../shared/context/auth_context';
-import { useContext } from 'react';
 import './CommentStyle.css';
 
 const Comment = ({ comment, postId, onCommentAdded }) => {
@@ -21,7 +20,6 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
     }
 
     const handleCommentAdded = (newComment) => {
-        // Call the function passed from the parent component to update comments
         if (onCommentAdded) {
             onCommentAdded(newComment);
         }
@@ -44,8 +42,8 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
     return (
         <React.Fragment>
             <Card className="comment-card">
-                <div className="user-item__content" width="100%" height="40px">
-                    <div className="user-item__image commenter-avatar">
+                <Card className="user-item__content author-item" width="100%" height="70px">
+                    <div className="user-item__image">
                         <Avatar 
                             image={comment.userId.image} 
                             alt={comment.userId.name}
@@ -58,17 +56,14 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                         />
                     </div>
                     <div className="comment-details">
-                        <h5>{comment.userId.name}</h5>
+                        <h4>{comment.userId.name}</h4>
                         <p>{new Date(comment.createdAt).toLocaleString()}</p>
                     </div>
                     <Button onClick={toggleContent}>
                         {showContent ? 'Hide' : 'Show'}
                     </Button>
-                </div>
-                <div className="comment-content">
-                    {showContent && <ReadMore content={comment.content} maxLength={100} />}
-                </div>
-                
+                </Card>
+                {showContent && <ReadMore content={comment.content} maxLength={100} />}
                 <div className="comment-actions">
                     <Button onClick={toggleReplyForm}>
                         {showReplyForm ? 'Cancel' : 'Reply'}
@@ -93,9 +88,9 @@ const Comment = ({ comment, postId, onCommentAdded }) => {
                         onCommentUpdated={onCommentAdded}
                     />
                 )}
-                <div className="comment-replies" style={{ display: showContent ? 'block' : 'none' }}>
+                <div className="comment-replies">
                     {comment.replies && comment.replies.length > 0 && comment.replies.map(reply => (
-                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} showContentProp={showContent} />
+                        <Comment key={reply?._id} comment={reply} postId={postId} onCommentAdded={onCommentAdded} />
                     ))}
                 </div>
             </Card>
