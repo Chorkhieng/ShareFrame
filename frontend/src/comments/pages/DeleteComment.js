@@ -1,20 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext} from 'react';
 import Button from '../../shared/components/FormElements/Button';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
-const DeleteComment = ({ commentId, refreshComments, onDelete }) => {
+const DeleteComment = ({ commentId, refreshComments, onDelete, cancelHandler }) => {
     const auth = useContext(AuthContext);
-    const { sendRequest } = useHTTPClient();
-    const [isConfirming, setIsConfirming] = useState(false);
-
-    const startConfirmingHandler = () => {
-        setIsConfirming(true);
-    };
-
-    const cancelHandler = () => {
-        setIsConfirming(false);
-    };
+    const { isLoading, error, clearError, sendRequest } = useHTTPClient();
 
     const confirmDeleteHandler = async () => {
         try {
@@ -28,28 +21,21 @@ const DeleteComment = ({ commentId, refreshComments, onDelete }) => {
             );
             onDelete(commentId);
             // refreshComments(); // Refresh comments data
-        } catch (err) {
-            // Handle error
-        } finally {
-            setIsConfirming(false);
-            refreshComments(); // Refresh comments data
+        } catch (err) { }
+        finally {
+            refreshComments();
         }
     };
 
     return (
         <React.Fragment>
-            {!isConfirming && (
-                <Button onClick={startConfirmingHandler}>
-                    Delete
-                </Button>
-            )}
-            {isConfirming && (
-                <div className="delete-confirmation">
-                    <p>Are you sure you want to delete this comment?</p>
-                    <Button onClick={confirmDeleteHandler}>Yes</Button>
-                    <Button onClick={cancelHandler}>Cancel</Button>
-                </div>
-            )}
+            <ErrorModal error={error} onClear={clearError} />
+            {isLoading && <LoadingSpinner asOverlay />}
+            <div className="delete-confirmation">
+                <p>Are you sure you want to delete this comment?</p>
+                <Button onClick={confirmDeleteHandler}>Yes</Button>
+                <Button onClick={cancelHandler}>Cancel</Button>
+            </div>
         </React.Fragment>
     );
 };

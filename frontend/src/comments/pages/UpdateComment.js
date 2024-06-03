@@ -1,9 +1,9 @@
-// UpdateComment.js
 import React, { useState, useContext } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
 import Button from '../../shared/components/FormElements/Button';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 const UpdateComment = ({ postId, commentId, existingContent, refreshComments, onCommentUpdated }) => {
   const auth = useContext(AuthContext);
@@ -35,13 +35,20 @@ const UpdateComment = ({ postId, commentId, existingContent, refreshComments, on
       // Call the refresh function after successful update
       refreshComments();
     } catch (error) {
-      // Handle error
+      // error is already handled in hook
     }
+  };
+
+  const handleCancel = () => {
+    // Implement any logic you need for canceling the update
+    // For example, resetting the content
+    setContent(existingContent);
   };
 
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
+      {isLoading && <LoadingSpinner asOverlay />}
       <form className="new-comment-form" onSubmit={handleSubmit}>
         <textarea
           value={content}
@@ -49,6 +56,9 @@ const UpdateComment = ({ postId, commentId, existingContent, refreshComments, on
         />
         <Button type="submit" disabled={isLoading}>
           {isLoading ? 'Updating...' : 'Update'}
+        </Button>
+        <Button onClick={handleCancel} disabled={isLoading}>
+          Cancel
         </Button>
       </form>
     </React.Fragment>

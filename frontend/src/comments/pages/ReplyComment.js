@@ -3,10 +3,11 @@ import { useHTTPClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth_context';
 import Button from '../../shared/components/FormElements/Button';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
-const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments }) => {
+const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments, cancelHandler }) => {
   const auth = useContext(AuthContext);
-  const { isLoading, error, clearError, sendRequest } = useHTTPClient();
+  const { isLoading, error, sendRequest, clearError } = useHTTPClient();
 
   const [content, setContent] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -60,6 +61,7 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments
   return (
     <React.Fragment>
       <ErrorModal error={error} onClear={clearError} />
+      {isLoading && <LoadingSpinner asOverlay />}
       <form onSubmit={handleSubmit}>
         <div className={`form-control ${!isValid && 'form-control--invalid'}`}>
           <label htmlFor="content">Reply</label>
@@ -71,9 +73,14 @@ const ReplyComment = ({ postId, parentCommentId, onCommentAdded, refreshComments
           />
           {!isValid && <p>{errorText}</p>}
         </div>
-        <Button type="submit" disabled={!isValid || isLoading}>
-          {isLoading ? 'Submitting...' : 'Submit'}
-        </Button>
+        <div>
+          <Button type="submit" disabled={!isValid || isLoading}>
+            {isLoading ? 'Submitting...' : 'Submit'}
+          </Button>
+          <Button type="button" onClick={cancelHandler} disabled={isLoading}>
+            Cancel
+          </Button>
+        </div>
       </form>
     </React.Fragment>
   );

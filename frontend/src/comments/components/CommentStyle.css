@@ -86,3 +86,32 @@
     width: 98%;
     margin: 0;
   }
+
+  .comment-options {
+    display: flex;
+    justify-content: space-between;
+}
+
+.select-wrapper {
+  appearance: none;
+  background-color: #ccc;
+  text-align: center;
+  border: 1px solid gray;
+  border-radius: 20%;
+  padding: none;
+}
+
+/* Media query for small screens */
+@media (max-width: 768px) {
+  select {
+    width: auto;
+    appearance: none;
+    background-color: rgb(224, 180, 181);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    border: none;
+    height: fit-content;
+  }
+}
+
