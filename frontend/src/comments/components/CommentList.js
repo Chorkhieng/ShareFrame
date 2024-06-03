@@ -71,7 +71,11 @@ const CommentList = ({ postId }) => {
             {isLoading && <LoadingSpinner />}
             {!isLoading && (
                 <div className="comment-list">
-                    <h4>Comments</h4>
+                    <h5>{comments.length} {comments.length <= 1 ? 
+                        ' comment'
+                        :
+                        ' comments'}
+                    </h5>
                     <Button onClick={() => setShowCommentForm(prev => !prev)}>
                         {showCommentForm ? 'Cancel' : 'New Comment'}
                     </Button>

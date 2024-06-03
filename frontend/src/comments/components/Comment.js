@@ -58,6 +58,7 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete })
 
     const cancelReplyHandler = () => {
         setShowReplyForm(false); // Hide the reply form when canceled
+        setSelectedOption('');
     };
 
     return (
