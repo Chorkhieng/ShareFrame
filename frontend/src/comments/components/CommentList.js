@@ -71,14 +71,17 @@ const CommentList = ({ postId }) => {
             {isLoading && <LoadingSpinner />}
             {!isLoading && (
                 <div className="comment-list">
-                    <h5>{comments.length} {comments.length <= 1 ? 
+                    {/* <h5>{comments.length} {comments.length <= 1 ? 
                         ' comment'
                         :
                         ' comments'}
-                    </h5>
-                    <Button onClick={() => setShowCommentForm(prev => !prev)}>
-                        {showCommentForm ? 'Cancel' : 'New Comment'}
-                    </Button>
+                    </h5> */}
+                    <span className="new-comment-form" >
+                        <Button onClick={() => setShowCommentForm(prev => !prev)}>
+                            New Comment
+                        </Button>
+                    </span>
+                    
                     {showCommentForm && (
                         <form className="new-comment-form" onSubmit={submitCommentHandler}>
                             <textarea
@@ -89,6 +92,9 @@ const CommentList = ({ postId }) => {
                             />
                             <Button type="submit" disabled={!newCommentContent.trim()}>
                                 Submit
+                            </Button>
+                            <Button onClick={() => setShowCommentForm(prev => !prev)}>
+                                Cancel
                             </Button>
                         </form>
                     )}
