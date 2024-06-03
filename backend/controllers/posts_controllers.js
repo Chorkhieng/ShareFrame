@@ -2,6 +2,7 @@ const HTTPError = require('../models/htttp_error');
 const { validationResult } = require('express-validator');
 const Post = require('../models/post');
 const User = require('../models/user');
+const Comment = require('../models/comment');
 const mongoose = require('mongoose');
 const fs = require('fs');
 
@@ -204,6 +205,12 @@ const deletePostById = async (req, res, next) => {
 
       await post.creator.save({ session: session });
       await session.commitTransaction();
+
+      // Find all comments with the specified postId
+      await Comment.find({ postId });
+
+      // Delete all comments with the specified postId
+      await Comment.deleteMany({ postId });
   }
   catch (err) {
       const error = new HTTPError("Could not delete the given postId.", 404);
