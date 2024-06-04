@@ -1,17 +1,13 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHTTPClient } from '../../shared/hooks/http-hook';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
-import Button from '../../shared/components/FormElements/Button';
-import { AuthContext } from '../../shared/context/auth_context';
 import Comment from './Comment';
 import './CommentStyle.css'
+import NewComment from '../pages/NewComment';
 
 const CommentList = ({ postId }) => {
-    const auth = useContext(AuthContext);
     const [comments, setComments] = useState([]);
-    const [showCommentForm, setShowCommentForm] = useState(false);
-    const [newCommentContent, setNewCommentContent] = useState('');
     const { isLoading, error, sendRequest, clearError } = useHTTPClient();
 
     const fetchComments = useCallback(async () => {
@@ -39,32 +35,6 @@ const CommentList = ({ postId }) => {
         setComments(prevComments => [...prevComments, newComment]);
     };
 
-    const submitCommentHandler = async (event) => {
-        event.preventDefault();
-        try {
-            await sendRequest(
-                `http://localhost:4000/api/comments/${postId}/comments`,
-                'POST',
-                JSON.stringify({
-                    content: newCommentContent,
-                    userId: auth.userId,
-                    postId: postId,
-                    parentCommentId: null
-                }),
-                {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + auth.token
-                }
-            );
-
-            setNewCommentContent('');
-            setShowCommentForm(false);
-            fetchComments();  // Refetch comments after submission
-        } catch (err) {
-            // Handle error
-        }
-    };
-
     return (
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError} />
@@ -76,28 +46,11 @@ const CommentList = ({ postId }) => {
                         :
                         ' comments'}
                     </h5> */}
-                    <span className="new-comment-form" >
-                        <Button onClick={() => setShowCommentForm(prev => !prev)}>
-                            New Comment
-                        </Button>
-                    </span>
-                    
-                    {showCommentForm && (
-                        <form className="new-comment-form" onSubmit={submitCommentHandler}>
-                            <textarea
-                                rows="5"
-                                value={newCommentContent}
-                                onChange={(e) => setNewCommentContent(e.target.value)}
-                                placeholder="Write your comment here..."
-                            />
-                            <Button type="submit" disabled={!newCommentContent.trim()}>
-                                Submit
-                            </Button>
-                            <Button onClick={() => setShowCommentForm(prev => !prev)}>
-                                Cancel
-                            </Button>
-                        </form>
-                    )}
+                    <NewComment 
+                        postId={postId}
+                        onCommentAdded={handleCommentAdded}
+                        refreshComments={refreshComments}
+                    />
 
                     {comments && comments.length > 0 && comments.map(comment => (
                         !comment?.parentCommentId &&
