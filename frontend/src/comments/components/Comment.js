@@ -14,7 +14,7 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete })
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
-    const [showContent, setShowContent] = useState(false);
+    const [showContent, setShowContent] = useState(true);
 
     // Function to calculate the number of days passed since the comment was created
     const getDaysPassed = (createdAt) => {
@@ -54,6 +54,7 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete })
     const cancelDeleteHandler = () => {
         // Set selected option back to null to reset the dropdown
         setSelectedOption(null);
+        setSelectedOption(""); // set back unselected mode
     };
 
     const cancelReplyHandler = () => {
