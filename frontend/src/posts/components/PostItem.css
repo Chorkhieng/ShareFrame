@@ -60,3 +60,27 @@ button {
   width: 100%;
   height: 70px; /* Fixed height */
 }
+
+.select-wrapper-post {
+  margin: 1px;
+  width: fit-content !important;
+  appearance: none;
+  text-align: center;
+  font-size: larger;
+  background-color: rgb(151, 151, 181);
+}
+
+/* Media query for small screens */
+@media (max-width: 768px) {
+  select {
+    width: auto;
+    appearance: none;
+    background-color: rgb(224, 180, 181);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    border: none;
+    height: fit-content;
+    font-size: medium;
+  }
+}

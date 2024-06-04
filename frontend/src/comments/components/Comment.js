@@ -6,6 +6,7 @@ import Avatar from '../../shared/components/UIElements/Avatar';
 import ReadMore from '../../shared/hooks/show-less-more-text-hook';
 import { AuthContext } from '../../shared/context/auth_context';
 import DeleteComment from '../pages/DeleteComment';
+import { getDaysPassed } from '../../shared/util/date-time-format';
 import './CommentStyle.css'
 
 const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete }) => {
@@ -16,21 +17,6 @@ const Comment = ({ comment, postId, onCommentAdded, refreshComments, onDelete })
     const [selectedOption, setSelectedOption] = useState(null);
     const [showContent, setShowContent] = useState(true);
 
-    // Function to calculate the number of days passed since the comment was created
-    const getDaysPassed = (createdAt) => {
-        const commentDate = new Date(createdAt);
-        const currentDate = new Date();
-        const differenceInTime = currentDate.getTime() - commentDate.getTime();
-        const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
-
-        if (differenceInDays === 1) {
-            return "Yesterday";
-        }
-        if (differenceInDays === 0) {
-            return "Today";
-        }
-        return `${differenceInDays} days ago`;
-    };
 
     if (!comment || !comment.userId) {
         return null;
